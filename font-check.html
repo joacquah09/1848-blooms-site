@@ -1,0 +1,15 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Font check</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="assets/site.css?v=3">
+<style>body{padding:2rem;max-width:900px;margin:auto}.row{border-bottom:1px solid #ccc;padding:1.2rem 0}.row small{display:block;font:14px Arial;color:#777;margin-bottom:.4rem}b.ok{color:#2a7d2a}b.no{color:#b00}</style></head>
+<body>
+<h1 style="font-size:1.4rem;letter-spacing:.1em">Font check</h1>
+<p id="where" style="font:14px Arial"></p>
+<div class="row"><small>Cormorant 300 (headings). Should look thin and elegant. <span data-f='300 30px Cormorant'></span></small><span style="font:300 38px Cormorant;letter-spacing:.12em">EVENT FLORAL DESIGN</span></div>
+<div class="row"><small>Cormorant 400 (body) <span data-f='400 20px Cormorant'></span></small><span style="font:400 22px Cormorant">We design florals for weddings and events.</span></div>
+<div class="row"><small>Questrial (nav and buttons) <span data-f='16px Questrial'></span></small><span style="font:13px Questrial;letter-spacing:.24em">HOME ABOUT SERVICES PORTFOLIO</span></div>
+<div class="row"><small>Pinyon Script (accent) <span data-f='40px "Pinyon Script"'></span></small><span style="font:44px 'Pinyon Script'">atmosphere.</span></div>
+<script>
+document.getElementById('where').textContent='Opened from: '+location.href+'  |  Browser: '+navigator.userAgent;
+document.fonts.ready.then(function(){document.querySelectorAll('[data-f]').forEach(function(s){var ok=document.fonts.check(s.getAttribute('data-f'));s.innerHTML=ok?'<b class="ok">LOADED</b>':'<b class="no">NOT LOADED</b>'})});
+</script></body></html>
