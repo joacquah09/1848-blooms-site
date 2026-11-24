@@ -251,13 +251,13 @@ h1+p,h2+p,h3+p{margin-top:1rem}
 .f-top{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;padding:2.2rem var(--pad);border-bottom:1px solid var(--line)}
 .f-top .brand img{height:56px}
 .f-mid{display:grid;grid-template-columns:max-content max-content minmax(0,1fr);gap:2rem clamp(2rem,4vw,3.5rem);padding:2.6rem var(--pad);align-items:start}
-.f-mid .f-btns{justify-self:end;width:min(100%,380px)}
+.f-mid .f-btns{justify-self:end;justify-items:end}
 .f-mid ul li+li{margin-top:.55rem}
 .f-mid a{font:400 .62rem var(--sans);letter-spacing:.24em;text-transform:uppercase;text-decoration:none}
 .f-mid a:hover{color:var(--rose-d)}
 .f-mid .f-note{font-size:1.05rem;color:var(--ink-2);max-width:30ch}
 .f-btns{display:grid;gap:1rem;justify-items:stretch}
-.f-btns .btn{padding:1.6em 1.5em;font-style:normal}
+.f-btns .btn{padding:1.6em 2.4em;font-style:normal}
 .f-thumbs{display:grid;grid-template-columns:repeat(5,1fr)}
 .f-thumbs img{width:100%;aspect-ratio:1;object-fit:cover}
 .legal{background:var(--rose);color:#fff;padding:.9rem var(--pad);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font:400 .6rem var(--sans);letter-spacing:.16em;text-transform:uppercase}
@@ -518,7 +518,10 @@ h1{font-size:clamp(1.9rem,1rem + 2.8vw,3.5rem)}
 .phero--plain .phero__foot p+p{margin-top:-.6rem}
 .faq details div p{margin:0}
 @media (max-width:1060px){
-  .f-mid .f-btns{justify-self:stretch;width:auto}
+  .f-mid .f-btns{justify-self:start;justify-content:start;justify-items:start;grid-template-columns:repeat(2,max-content)}
+}
+@media (max-width:560px){
+  .f-mid .f-btns{grid-template-columns:max-content}
 }
 @media (max-width:900px){
   .form-grid--flip{grid-template-columns:1fr}
