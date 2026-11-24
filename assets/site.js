@@ -240,3 +240,28 @@
     $$('[data-ty]', ty).forEach(function (n) { n.hidden = n.getAttribute('data-ty') !== t; });
   }
 })();
+
+/* review cards: show "Read more" only when the quote is clamped */
+(function () {
+  var cards = document.querySelectorAll('.rev .rc');
+  if (!cards.length) return;
+  function check() {
+    cards.forEach(function (c) {
+      var q = c.querySelector('blockquote'), b = c.querySelector('.more');
+      if (!q || !b || c.classList.contains('is-open')) return;
+      b.hidden = q.scrollHeight <= q.clientHeight + 2;
+    });
+  }
+  cards.forEach(function (c) {
+    var b = c.querySelector('.more');
+    if (!b) return;
+    b.addEventListener('click', function () {
+      var open = c.classList.toggle('is-open');
+      b.textContent = open ? 'Show less' : 'Read more';
+      b.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  });
+  check();
+  window.addEventListener('resize', check);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(check);
+})();

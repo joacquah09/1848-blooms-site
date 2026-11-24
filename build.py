@@ -93,7 +93,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 <meta property="og:image" content="assets/img/{og}.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=7">
+<link rel="stylesheet" href="assets/site.css?v=9">
 </head>
 <body>
 {header(fname)}
@@ -202,11 +202,11 @@ home = f'''
   <div class="wrap">
     <h2 class="dsp" style="text-align:center;margin-bottom:clamp(2rem,4vw,3.5rem)">Kind words</h2>
     <div class="rev">
-      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>Irene was fabulous to work with! She took my vision and made it come to life for our wedding day! She is willing to go above and beyond for ideas. My lavender, eucalyptus, and sage came together beautifully. I cannot express enough how amazing she was to work with. Thank you for taking my ideas and making them as beautiful as I could imagine.</blockquote><cite>Danielle F.</cite></figure>
-      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>I was very happy with the flower arrangement. Blooms and Design was very professional and polite on the phone. Irene gets 5 Stars!</blockquote><cite>Bill B.</cite></figure>
-      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>I used 1848 Blooms and design for my event and she awesome. Avery professional and on time.</blockquote><cite>Emmbra N.</cite></figure>
-      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>Their service provided was impeccable. It’s the best place to get your flower arrangements.</blockquote><cite>Ally F.</cite></figure>
-      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>Hands down my go to place to get the freshest bouquets! Top notch quality.</blockquote><cite>Gina H.</cite></figure>
+      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>Irene was fabulous to work with! She took my vision and made it come to life for our wedding day! She is willing to go above and beyond for ideas. My lavender, eucalyptus, and sage came together beautifully. I cannot express enough how amazing she was to work with. Thank you for taking my ideas and making them as beautiful as I could imagine.</blockquote><button type="button" class="more" hidden aria-expanded="false">Read more</button><cite>Danielle F.</cite></figure>
+      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>I was very happy with the flower arrangement. Blooms and Design was very professional and polite on the phone. Irene gets 5 Stars!</blockquote><button type="button" class="more" hidden aria-expanded="false">Read more</button><cite>Bill B.</cite></figure>
+      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>I used 1848 Blooms and design for my event and she awesome. Avery professional and on time.</blockquote><button type="button" class="more" hidden aria-expanded="false">Read more</button><cite>Emmbra N.</cite></figure>
+      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>Their service provided was impeccable. It’s the best place to get your flower arrangements.</blockquote><button type="button" class="more" hidden aria-expanded="false">Read more</button><cite>Ally F.</cite></figure>
+      <figure class="rc"><span class="src">Google &middot; <span class="stars" aria-label="5 out of 5 stars">★★★★★</span></span><blockquote>Hands down my go to place to get the freshest bouquets! Top notch quality.</blockquote><button type="button" class="more" hidden aria-expanded="false">Read more</button><cite>Gina H.</cite></figure>
     </div>
     <div class="btn-row btn-row--center" style="margin-top:clamp(2rem,4vw,3rem)"><a class="btn" href="https://www.google.com/maps?cid=16409749098243940665" target="_blank" rel="noopener">Read all reviews on Google</a></div>
   </div>
