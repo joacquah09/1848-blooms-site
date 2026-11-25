@@ -172,6 +172,30 @@
       if (radio) radio.checked = true;
     }
 
+    /* reservation form: show the field that matches the chosen experience */
+    var shows = $$('[data-show]', form);
+    if (shows.length) {
+      var sync = function () {
+        var c = $('input[name="experience"]:checked', form);
+        var v = c ? c.value : '';
+        shows.forEach(function (f) {
+          var on = f.getAttribute('data-show') === v;
+          f.hidden = !on;
+          var i = $('input,select', f);
+          if (i) i.required = on;
+        });
+      };
+      var item = qs.get('item');
+      if (item) {
+        shows.forEach(function (f) {
+          var s = $('select', f);
+          if (s && $('option[value="' + item + '"]', s)) s.value = item;
+        });
+      }
+      $$('input[name="experience"]', form).forEach(function (r) { r.addEventListener('change', sync); });
+      sync();
+    }
+
     var validate = function () {
       var ok = true, first = null;
       $$('.field', form).forEach(function (f) {

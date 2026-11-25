@@ -12,7 +12,7 @@
 <meta property="og:image" content="assets/img/home-banner.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=12">
+<link rel="stylesheet" href="assets/site.css?v=13">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -32,7 +32,7 @@
 <section class="phero phero--plain">
   
   <div class="phero__mid"><span class="eyebrow">Workshops &middot; Private gatherings</span><div class="tbar"><h1 class="dsp">Reserve your spot</h1></div></div>
-  <div class="phero__foot"><p>Choose an experience and a date, and we will confirm your spot by email.</p></div>
+  <div class="phero__foot"><p>Choose a workshop, a pass or a private gathering, and we will confirm your spot and payment details by email.</p></div>
 </section>
 
 <section class="section">
@@ -42,11 +42,14 @@
         <legend>Which experience?</legend>
         <div class="choice" style="margin-top:.6rem">
           <label><input type="radio" name="experience" value="workshop" required><span>Floral workshop</span></label>
+          <label><input type="radio" name="experience" value="pass"><span>Workshop pass</span></label>
           <label><input type="radio" name="experience" value="private"><span>Private gathering</span></label>
         </div>
         <p class="err">Choose an experience.</p>
       </fieldset>
-      <div class="field"><label for="rdate">Preferred date</label><input id="rdate" name="preferred_date" type="date" required><p class="err">Choose a date.</p></div>
+      <div class="field full" data-show="workshop"><label for="ritem">Which workshop?</label><select id="ritem" name="workshop"><option value="">Choose a date</option><option value="winter-garden">Winter Garden Arrangement, Sat, Jan 17, 2027</option><option value="romantic-roses">Romantic Garden Roses, Sat, Feb 14, 2027</option><option value="spring-bloom">Spring in Bloom, Sat, Mar 14, 2027</option></select></div>
+      <div class="field full" data-show="pass" hidden><label for="rpass">Which pass?</label><select id="rpass" name="pass"><option value="pass-4">Four-workshop pass, $660</option><option value="pass-6">Six-workshop pass, $960</option></select></div>
+      <div class="field" data-show="private" hidden><label for="rdate">Preferred date</label><input id="rdate" name="preferred_date" type="date"></div>
       <div class="field"><label for="rguests">Number of guests</label><input id="rguests" name="guests" type="number" min="1" value="1" inputmode="numeric" required><p class="err">Enter how many guests.</p></div>
       <div class="field"><label for="rname">Your name</label><input id="rname" name="name" autocomplete="name" required><p class="err">Enter your name.</p></div>
       <div class="field"><label for="remail">Email</label><input id="remail" name="email" type="email" autocomplete="email" required><p class="err">Enter a valid email address.</p></div>
@@ -59,7 +62,7 @@
     <aside class="aside">
       <img src="assets/img/designer-making.jpg" width="1600" height="1067" alt="A designer arranging flowers in white bowls at a wooden table" loading="lazy" decoding="async" style="aspect-ratio:3/2;object-position:30% 50%">
       <dl>
-        <div><dt>What happens next</dt><dd>We email you to confirm your date and share details. <span class="ph">[Add payment steps.]</span></dd></div>
+        <div><dt>What happens next</dt><dd>We email you to confirm your spot and send a link to pay.</dd></div>
         <div><dt>Cancellations</dt><dd><span class="ph">[Cancellation and rescheduling policy.]</span></dd></div>
         <div><dt>Questions</dt><dd><a class="link" href="contact.html">Send us a message</a></dd></div>
       </dl>

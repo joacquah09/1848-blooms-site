@@ -93,7 +93,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 <meta property="og:image" content="assets/img/{og}.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=12">
+<link rel="stylesheet" href="assets/site.css?v=13">
 </head>
 <body>
 {header(fname)}
@@ -393,61 +393,110 @@ bar = f'''
 page('floral-bar.html', 'Floral Bar', 'The Floral Bar by 1848 Blooms & Designs: a self-serve flower station where guests pick stems, arrange them and take them home.', bar)
 
 # ================================================================== EXPERIENCES
+# Edit upcoming workshops and passes here, then run `python3 build.py`.
+# `book`: a payment or booking link (Square, Stripe, Eventbrite...). Leave it
+# empty and the button opens the reservation form with the workshop filled in.
+WORKSHOPS = [
+    dict(slug='winter-garden', title='Winter Garden Arrangement', date='Sat, Jan 17, 2027', time='2:00 – 4:00 PM',
+         place='New Hope, PA', price=175, seats=12, booked=8, img='bouquet-white-b',
+         alt='A white bouquet of roses and wildflowers with greenery',
+         blurb='A seasonal arrangement with textured blooms and winter greenery.', book=''),
+    dict(slug='romantic-roses', title='Romantic Garden Roses', date='Sat, Feb 14, 2027', time='2:00 – 4:00 PM',
+         place='New Hope, PA', price=175, seats=12, booked=6, img='pastel-closeup',
+         alt='Pink garden roses and blue glassware on a pastel table',
+         blurb='Create a lush, garden-inspired arrangement featuring romantic roses and seasonal blooms.', book=''),
+    dict(slug='spring-bloom', title='Spring in Bloom', date='Sat, Mar 14, 2027', time='2:00 – 4:00 PM',
+         place='New Hope, PA', price=175, seats=12, booked=10, img='ranunculus-jar',
+         alt='White ranunculus in a clear glass jar',
+         blurb='A fresh spring arrangement that celebrates the season’s first blooms.', book=''),
+]
+PASSES = [
+    dict(slug='pass-4', title='Four-workshop pass', price=660, save=40, book=''),
+    dict(slug='pass-6', title='Six-workshop pass', price=960, save=90, book=''),
+]
+
+ICONS = {
+ 'flower': '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="3.2"/><path d="M16 12.8c-2.6-3.6-2.6-7 0-9 2.6 2 2.6 5.4 0 9zM16 19.2c2.6 3.6 2.6 7 0 9-2.6-2-2.6-5.4 0-9zM12.8 16c-3.6 2.6-7 2.6-9 0 2-2.6 5.4-2.6 9 0zM19.2 16c3.6-2.6 7-2.6 9 0-2 2.6-5.4 2.6-9 0z"/></svg>',
+ 'scissors': '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="9" cy="24" r="3.5"/><circle cx="23" cy="24" r="3.5"/><path d="M11.5 21.5 24 4M20.5 21.5 8 4"/></svg>',
+ 'people': '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="10" r="4"/><path d="M8 26c0-5 3.6-8 8-8s8 3 8 8"/><circle cx="7.5" cy="13" r="3"/><path d="M2.5 25c0-3.6 2.2-6 5.5-6"/><circle cx="24.5" cy="13" r="3"/><path d="M29.5 25c0-3.6-2.2-6-5.5-6"/></svg>',
+ 'vase': '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M12 4h8M13 4v5c-4 2-6 6-6 10 0 5 4 9 9 9s9-4 9-9c0-4-2-8-6-10V4"/></svg>',
+}
+
+def book_href(item, kind):
+    if item['book']:
+        return f'href="{html.escape(item["book"])}" target="_blank" rel="noopener"'
+    return f'href="reserve.html?experience={kind}&amp;item={item["slug"]}"'
+
+def ws_row(w):
+    left = w['seats'] - w['booked']
+    pct = round(100 * w['booked'] / w['seats'])
+    tag = f'Only {left} spot{"s" if left != 1 else ""} left' if left > 0 else 'Sold out'
+    btn = (f'<a class="btn" {book_href(w, "workshop")}>Book now</a>' if left > 0
+           else '<span class="btn btn--off" aria-disabled="true">Sold out</span>')
+    return f'''<article class="ws">
+  <div class="ws__img">{im(w['img'], w['alt'])}</div>
+  <div class="ws__body">
+    <h3>{w['title']}</h3>
+    <p class="ws__meta"><span>{w['date']}</span><span>{w['time']}</span><span>{w['place']}</span></p>
+    <p>{w['blurb']}</p>
+  </div>
+  <div class="ws__price"><strong>${w['price']}</strong><span>per person</span></div>
+  <div class="ws__cta">
+    <span class="ws__tag">{tag}</span>
+    <div class="ws__bar" role="img" aria-label="{w['booked']} of {w['seats']} spots booked"><i style="width:{pct}%"></i></div>
+    {btn}
+  </div>
+</article>'''
+
+benefits = ''.join(f'<li>{ICONS[i]}<span>{t}</span></li>' for i, t in [
+    ('flower', 'Fresh, seasonal flowers'), ('scissors', 'Step-by-step guidance'),
+    ('people', 'Small, intimate classes'), ('vase', 'An arrangement to take home')])
+passes = ''.join(f'''<div class="pass"><h3>{p_['title']}</h3><strong>${p_['price']}</strong><span>Save ${p_['save']}</span><a class="btn" {book_href(p_, "pass")}>Choose pass</a></div>''' for p_ in PASSES)
+
 exp = f'''
-{phero('designing-table', 'A florist arranging yellow and white flowers at a table in a bright room', 'Experiences', 'Workshops', 'Private<br>gatherings',
-       'Hands-on floral experiences that bring people together around flowers, designed to inspire creativity and connection.',
-       '<a class="btn" href="reserve.html">Reserve your spot</a>')}
+<section class="ex-hero">
+  <div class="ex-hero__img">{im('designing-table', 'Irene arranging yellow and white flowers at a table in a bright room', eager=True, extra='style="object-position:70% 50%"')}</div>
+  <div class="ex-hero__copy">
+    <span class="eyebrow">Experiences</span>
+    <h1 class="dsp">A year of floral workshops</h1>
+    <p>Hands-on workshops, seasonal design experiences and private gatherings. No experience needed, just come ready to create.</p>
+    <div class="btn-row"><a class="btn" href="#workshops">View workshops</a><a class="btn btn--ghost" href="#passes">Get a workshop pass</a></div>
+  </div>
+</section>
 
-<section class="section">
+<ul class="ex-benefits">{benefits}</ul>
+
+<section class="section" id="workshops">
   <div class="wrap">
-    <div class="xp">
-      <figure>{im('designer-making', 'A designer arranging flowers in white bowls at a wooden table by a window')}</figure>
-      <div>
-        <h2 class="dsp">Floral workshops</h2>
-        <p>Join a small class, learn the techniques behind a designer’s arrangements and leave with your own piece. No experience needed. <span class="ph">[Confirm format.]</span></p>
-        <dl>
-          <dt>Length</dt><dd><span class="ph">[Hours]</span></dd>
-          <dt>Group size</dt><dd><span class="ph">[Number of guests]</span></dd>
-          <dt>Price</dt><dd><span class="ph">[$ per person]</span></dd>
-          <dt>Where</dt><dd><span class="ph">[Studio or venue and city]</span></dd>
-        </dl>
-        <div class="btn-row"><a class="btn" href="reserve.html?experience=workshop">Reserve your spot</a></div>
-      </div>
-    </div>
-    <div class="xp">
-      <figure>{im('table-window', 'A bright table by a window set with glassware and a centerpiece of yellow and orange flowers', '', extra='style="object-position:50% 75%"')}</figure>
-      <div>
-        <h2 class="dsp">Private gatherings</h2>
-        <p>Bring a workshop to your group: bridal showers, birthdays, team outings or a day with friends. We shape the experience around the occasion. <span class="ph">[Confirm format.]</span></p>
-        <dl>
-          <dt>Length</dt><dd><span class="ph">[Hours]</span></dd>
-          <dt>Group size</dt><dd><span class="ph">[Minimum and maximum]</span></dd>
-          <dt>Price</dt><dd><span class="ph">[$ per person or per group]</span></dd>
-          <dt>Where</dt><dd><span class="ph">[Your space or ours]</span></dd>
-        </dl>
-        <div class="btn-row"><a class="btn" href="reserve.html?experience=private">Reserve your spot</a></div>
-      </div>
+    <h2 class="dsp ex-h2">Upcoming workshops</h2>
+    <div class="ws-list">
+      {''.join(ws_row(w) for w in WORKSHOPS)}
     </div>
   </div>
 </section>
 
-<section class="section band-paper2">
-  <div class="wrap split split--top split--57">
-    <div class="copy"><h2 class="dsp" style="font-size:clamp(2rem,.9rem + 3.4vw,4rem)">Upcoming dates</h2><p>Spots are limited so everyone gets time with the designer.</p></div>
-    <table class="dates">
-      <thead><tr><th scope="col">Date</th><th scope="col">Experience</th><th scope="col">Spots</th></tr></thead>
-      <tbody>
-        <tr><td><span class="ph">[Date and time]</span></td><td><span class="ph">[Workshop name]</span></td><td><a class="link" href="reserve.html?experience=workshop">Reserve</a></td></tr>
-        <tr><td><span class="ph">[Date and time]</span></td><td><span class="ph">[Workshop name]</span></td><td><a class="link" href="reserve.html?experience=workshop">Reserve</a></td></tr>
-        <tr><td><span class="ph">[Date and time]</span></td><td><span class="ph">[Workshop name]</span></td><td><a class="link" href="reserve.html?experience=workshop">Reserve</a></td></tr>
-      </tbody>
-    </table>
+<section class="section section--tight" id="passes">
+  <div class="wrap">
+    <div class="passes">
+      <div class="passes__intro"><h2 class="dsp ex-h2">Workshop passes</h2><p>Enjoy a year of floral experiences and save.</p></div>
+      {passes}
+    </div>
   </div>
 </section>
 
-{closer('Make something beautiful together.', 'Reserve your spot', 'reserve.html', 'band-petal')}
+<section class="section" id="private">
+  <div class="wrap ex-private">
+    <figure>{im('pastel-table-c', 'A pastel table with a tall arrangement of pink and white flowers and pink napkins')}</figure>
+    <div>
+      <span class="eyebrow">Private experiences</span>
+      <h2 class="dsp ex-h2">Gather, create, celebrate</h2>
+      <p>A floral workshop for your group, perfect for birthdays, bridal showers, team gatherings and more. We bring the flowers, the tools and the know-how.</p>
+      <div class="btn-row"><a class="btn" href="reserve.html?experience=private">Plan a private experience</a></div>
+    </div>
+  </div>
+</section>
 '''
-page('experiences.html', 'Experiences', 'Hands-on floral workshops and private gatherings with 1848 Blooms & Designs in Delaware and Philadelphia.', exp)
+page('experiences.html', 'Experiences', 'Book a hands-on floral workshop, a workshop pass or a private floral experience with 1848 Blooms & Designs in Delaware, Pennsylvania and beyond.', exp)
 
 # ================================================================== PORTFOLIO
 P = [
@@ -561,7 +610,7 @@ page('contact.html', 'Contact', 'Inquire about wedding or event florals, the Flo
 # ================================================================== RESERVE
 reserve = f'''
 {phero('', '', 'Reserve your spot', 'Workshops', 'Private<br>gatherings',
-       'Choose an experience and a date, and we will confirm your spot by email.', plain=True)}
+       'Choose a workshop, a pass or a private gathering, and we will confirm your spot and payment details by email.', plain=True)}
 
 <section class="section">
   <div class="wrap form-grid">
@@ -570,11 +619,14 @@ reserve = f'''
         <legend>Which experience?</legend>
         <div class="choice" style="margin-top:.6rem">
           <label><input type="radio" name="experience" value="workshop" required><span>Floral workshop</span></label>
+          <label><input type="radio" name="experience" value="pass"><span>Workshop pass</span></label>
           <label><input type="radio" name="experience" value="private"><span>Private gathering</span></label>
         </div>
         <p class="err">Choose an experience.</p>
       </fieldset>
-      <div class="field"><label for="rdate">Preferred date</label><input id="rdate" name="preferred_date" type="date" required><p class="err">Choose a date.</p></div>
+      <div class="field full" data-show="workshop"><label for="ritem">Which workshop?</label><select id="ritem" name="workshop"><option value="">Choose a date</option>{''.join(f'<option value="{w["slug"]}">{w["title"]}, {w["date"]}</option>' for w in WORKSHOPS)}</select></div>
+      <div class="field full" data-show="pass" hidden><label for="rpass">Which pass?</label><select id="rpass" name="pass">{''.join(f'<option value="{p_["slug"]}">{p_["title"]}, ${p_["price"]}</option>' for p_ in PASSES)}</select></div>
+      <div class="field" data-show="private" hidden><label for="rdate">Preferred date</label><input id="rdate" name="preferred_date" type="date"></div>
       <div class="field"><label for="rguests">Number of guests</label><input id="rguests" name="guests" type="number" min="1" value="1" inputmode="numeric" required><p class="err">Enter how many guests.</p></div>
       <div class="field"><label for="rname">Your name</label><input id="rname" name="name" autocomplete="name" required><p class="err">Enter your name.</p></div>
       <div class="field"><label for="remail">Email</label><input id="remail" name="email" type="email" autocomplete="email" required><p class="err">Enter a valid email address.</p></div>
@@ -587,7 +639,7 @@ reserve = f'''
     <aside class="aside">
       {im('designer-making', 'A designer arranging flowers in white bowls at a wooden table', '', extra='style="aspect-ratio:3/2;object-position:30% 50%"')}
       <dl>
-        <div><dt>What happens next</dt><dd>We email you to confirm your date and share details. <span class="ph">[Add payment steps.]</span></dd></div>
+        <div><dt>What happens next</dt><dd>We email you to confirm your spot and send a link to pay.</dd></div>
         <div><dt>Cancellations</dt><dd><span class="ph">[Cancellation and rescheduling policy.]</span></dd></div>
         <div><dt>Questions</dt><dd><a class="link" href="contact.html">Send us a message</a></dd></div>
       </dl>
