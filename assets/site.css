@@ -519,6 +519,8 @@ h1{font-size:clamp(1.9rem,1rem + 2.8vw,3.5rem)}
 .rc .more[hidden]{display:block;visibility:hidden}
 .rc cite{padding-top:1rem;border-top:1px solid var(--line)}
 .band-sand{background:var(--petal-2)}
+.panel--sand{background:var(--petal-2)}
+.panel--sand .tick strong{color:var(--ink)}
 .band-sand .principles h3{color:var(--ink)}
 .band-sand .principles p{color:var(--body-c)}
 .band-sand .principles>div{border-color:var(--line)}

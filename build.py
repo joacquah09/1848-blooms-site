@@ -93,7 +93,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 <meta property="og:image" content="assets/img/{og}.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=10">
+<link rel="stylesheet" href="assets/site.css?v=11">
 </head>
 <body>
 {header(fname)}
@@ -283,7 +283,7 @@ page('designer.html', 'Meet the designer', 'Meet Irene Acquah, lead designer of 
 
 # ================================================================== SERVICES
 services = f'''
-{phero('pastel-table-b', 'A white table set with a tall arrangement of pink, peach and white flowers, taper candles and pink napkins', 'Services', 'Weddings', 'Events',
+{phero('tablescape-citrus', 'A centerpiece of orange roses and yellow blooms on a linen-covered table', 'Services', 'Weddings', 'Events',
        'Full-service florals, from a single bouquet to a ceremony and reception, designed around life’s most meaningful moments our clients cherish.',
        '<a class="btn" href="contact.html#general">Start an inquiry</a>')}
 
@@ -304,7 +304,7 @@ services = f'''
 </section>
 
 <section id="events" class="panels">
-  <div class="panel panel--deep panel--center"><div>
+  <div class="panel panel--sand panel--center"><div>
     <h2 class="dsp">Events</h2>
     <p>Some gatherings call for more than a beautiful table. They call for flowers that make people stop and look.</p>
     <p>From intimate dinners and bridal showers to birthdays and corporate events, we bring the beauty of a garden into the spaces where people come together.</p>
@@ -314,8 +314,8 @@ services = f'''
       <li><strong>From a single arrangement to a room full of flowers, every celebration deserves its own look.</strong></li>
     </ul>
     <p><em>Every event is different. Let’s talk about yours.</em></p>
-    <p class="small" style="color:rgba(246,238,232,.85)">Event florals start at $750.00</p>
-    <div class="btn-row"><a class="btn btn--cream" href="contact.html">Inquire about your event</a></div>
+    <p class="small">Event florals start at $750.00</p>
+    <div class="btn-row"><a class="btn" href="contact.html">Inquire about your event</a></div>
   </div></div>
   <div class="panel panel--img" style="min-height:680px">{im('pastel-table-a', 'A pastel table with a tall arrangement of pink and white flowers, a taper candle and pink napkins')}</div>
 </section>
@@ -355,10 +355,10 @@ bar = f'''
 
 <section class="panels">
   <div class="panel panel--img" style="min-height:640px">{im('home-floralbar', 'A woven basket filled with white and hot pink roses')}</div>
-  <div class="panel panel--deep panel--center"><div>
+  <div class="panel panel--sand panel--center"><div>
     <h2 class="dsp">Pick your stems. Arrange them. Take them home.</h2>
     <p>The Floral Bar turns flowers into the activity. We set up the bar with seasonal stems, greenery and containers in your palette, and a designer shows guests how to build something beautiful.</p>
-    <div class="btn-row"><a class="btn btn--cream" href="contact.html">Inquire about a Floral Bar</a></div>
+    <div class="btn-row"><a class="btn" href="contact.html">Inquire about a Floral Bar</a></div>
   </div></div>
 </section>
 
