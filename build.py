@@ -57,7 +57,7 @@ def header(cur):
 <nav class="primary" aria-label="Main">{links}</nav>
 <nav class="mnav" id="mnav" aria-label="Menu">
   <ul>{m}</ul>
-  <div class="foot-line"><span>Serving {AREA}</span><span>Now booking 2026</span></div>
+  <div class="foot-line"><span>Serving {AREA}</span><span>Now booking 2027</span></div>
 </nav>'''
 
 
@@ -71,7 +71,7 @@ def footer():
     <div class="f-btns"><a class="btn" href="reserve.html">Reserve your spot</a><a class="btn" {WED_ATTR}>Wedding inquiry</a></div>
   </div>
   <div class="f-thumbs">{thumbs}</div>
-  <div class="legal"><span>&copy; <span data-year>2026</span> 1848 Blooms &amp; Designs</span><span>Serving {AREA} &middot; Now booking 2026</span></div>
+  <div class="legal"><span>&copy; <span data-year>2026</span> 1848 Blooms &amp; Designs</span><span>Serving {AREA} &middot; Now booking 2027</span></div>
 </footer>'''
 
 
@@ -204,7 +204,7 @@ home = f'''
 <section class="hero">
   {im('home-banner', 'A long white table set with candles, glassware and a low arrangement of yellow, peach and white flowers beside a window', 'hero__img', eager=True)}
   <div class="hero__body">
-    <span class="eyebrow">{AREA} &middot; Now booking 2026</span>
+    <span class="eyebrow">{AREA} &middot; Now booking 2027</span>
     <h1>Nature inspired garden style florals</h1>
     <div class="btn-row">
       <a class="btn btn--arrow" href="services.html">Weddings + events</a>
@@ -638,7 +638,7 @@ page('portfolio.html', 'Portfolio', 'Weddings, events, bouquets and floral detai
 # ================================================================== CONTACT
 contact = f'''
 <section class="phero phero--plain">
-  <div class="phero__mid"><span class="eyebrow">Inquiries &middot; Now booking 2026</span><div class="tbar"><h1 class="dsp">Get in touch</h1></div></div>
+  <div class="phero__mid"><span class="eyebrow">Inquiries &middot; Now booking 2027</span><div class="tbar"><h1 class="dsp">Get in touch</h1></div></div>
   <div class="phero__foot">
     <p>We are looking forward to hearing from you!</p>
     <p>For weddings, please visit our <a class="link" href="services.html#weddings">wedding page here</a> and complete our <a class="link" {WED_ATTR}>wedding inquiry form here</a>.<br>For general inquiries, send us a <a class="link" href="#general">message here</a>.</p>
