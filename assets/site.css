@@ -613,15 +613,18 @@ h1{font-size:clamp(1.9rem,1rem + 2.8vw,3.5rem)}
 .ex-private>div{text-align:left}
 .ex-private .eyebrow{display:block}
 
-/* ---------- buttons in the logo's magenta ---------- */
-:root{--magenta:#A6708D;--magenta-d:#94607E}
-.btn{background:var(--magenta);border-color:var(--magenta);color:#fff}
-.btn:hover{background:var(--magenta-d);border-color:var(--magenta-d);color:#fff}
-.btn--ghost{background:transparent;border-color:var(--magenta);color:var(--magenta)}
-.btn--ghost:hover{background:var(--magenta);border-color:var(--magenta);color:#fff}
-.btn--cream{background:var(--cream);border-color:var(--cream);color:var(--magenta)}
-.btn--cream:hover{background:#fff;border-color:#fff;color:var(--magenta-d)}
-.hero .btn{background:rgba(166,112,141,.94);border-color:transparent;color:#fff}
+/* ---------- buttons in the logo's pink ----------
+   #BE92A4 is the average pink of the two flowers in assets/logo.png;
+   #B07E97 (hover) is a deeper tone from the same petals. Dark text keeps
+   the labels readable on this lighter pink. */
+:root{--magenta:#BE92A4;--magenta-d:#B07E97}
+.btn{background:var(--magenta);border-color:var(--magenta);color:var(--ink)}
+.btn:hover{background:var(--magenta-d);border-color:var(--magenta-d);color:var(--ink)}
+.btn--ghost{background:transparent;border-color:var(--magenta);color:var(--ink)}
+.btn--ghost:hover{background:var(--magenta);border-color:var(--magenta);color:var(--ink)}
+.btn--cream{background:var(--cream);border-color:var(--cream);color:var(--ink)}
+.btn--cream:hover{background:var(--magenta);border-color:var(--magenta);color:var(--ink)}
+.hero .btn{background:rgba(190,146,164,.95);border-color:transparent;color:var(--ink)}
 .hero .btn:hover{background:var(--magenta-d)}
-.choice input:checked+span{background:var(--magenta);border-color:var(--magenta);color:#fff}
+.choice input:checked+span{background:var(--magenta);border-color:var(--magenta);color:var(--ink)}
 .choice span:hover{border-color:var(--magenta)}
