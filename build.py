@@ -101,7 +101,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 </main>
 {footer()}
 {wedding_modal()}
-<script src="assets/site.js?v=4"></script>
+<script src="assets/site.js?v=6"></script>
 </body>
 </html>
 ''')
@@ -464,15 +464,15 @@ WORKSHOPS = [
     dict(slug='winter-garden', title='Winter Garden Arrangement', date='Sat, Jan 17, 2027', time='2:00 – 4:00 PM',
          place='New Hope, PA', price=175, seats=12, booked=0, img='bouquet-white-b',
          alt='A white bouquet of roses and wildflowers with greenery',
-         blurb='A seasonal arrangement with textured blooms and winter greenery.', book=''),
+         blurb='A seasonal arrangement with textured blooms and winter greenery.', book='https://book.stripe.com/00weVdfAD5rq4ag9sp1kA09'),
     dict(slug='romantic-roses', title='Romantic Garden Roses', date='Sat, Feb 14, 2027', time='2:00 – 4:00 PM',
          place='New Hope, PA', price=175, seats=12, booked=0, img='pastel-closeup',
          alt='Pink garden roses and blue glassware on a pastel table',
-         blurb='Create a lush, garden-inspired arrangement featuring romantic roses and seasonal blooms.', book=''),
+         blurb='Create a lush, garden-inspired arrangement featuring romantic roses and seasonal blooms.', book='https://book.stripe.com/6oUfZh0FJ3ji2288ol1kA0a'),
     dict(slug='spring-bloom', title='Spring in Bloom', date='Sat, Mar 14, 2027', time='2:00 – 4:00 PM',
          place='New Hope, PA', price=175, seats=12, booked=0, img='ranunculus-jar',
          alt='White ranunculus in a clear glass jar',
-         blurb='A fresh spring arrangement that celebrates the season’s first blooms.', book=''),
+         blurb='A fresh spring arrangement that celebrates the season’s first blooms.', book='https://book.stripe.com/cNi14n1JN4nmeOU4851kA0b'),
 ]
 # Live seat counts from Stripe (written hourly by scripts/stripe_sync.py).
 # A workshop's capacity is the payment limit on its Stripe Payment Link.
@@ -484,8 +484,8 @@ if os.path.exists(_seats_file):
         _w.update({k: v for k, v in _live.get(_w['slug'], {}).items() if k in ('seats', 'booked', 'closed')})
 
 PASSES = [
-    dict(slug='pass-4', title='Four-workshop pass', price=660, save=40, book=''),
-    dict(slug='pass-6', title='Six-workshop pass', price=960, save=90, book=''),
+    dict(slug='pass-4', title='Four-workshop pass', price=660, save=40, book='https://buy.stripe.com/14A6oH3RV8DC6ioawt1kA0c'),
+    dict(slug='pass-6', title='Six-workshop pass', price=960, save=90, book='https://buy.stripe.com/28E00j3RV9HGfSYeMJ1kA0d'),
 ]
 
 ICONS = {
@@ -497,7 +497,7 @@ ICONS = {
 
 def book_href(item, kind):
     if item['book']:
-        return f'href="{html.escape(item["book"])}" target="_blank" rel="noopener"'
+        return f'href="{html.escape(item["book"])}"'
     return f'href="reserve.html?experience={kind}&amp;item={item["slug"]}"'
 
 def ws_row(w):
@@ -741,6 +741,8 @@ thanks = f'''
   <div class="phero__foot">
     <p data-ty="inquiry">We received your inquiry and will reply by email within 24 hours.</p>
     <p data-ty="wedding" hidden>We received your wedding and event inquiry. Irene will reply by email within 24 hours.</p>
+    <p data-ty="booked" hidden>You&rsquo;re booked! Your receipt is on its way to your email. We&rsquo;ll send workshop details a few days before your date.</p>
+    <p data-ty="pass" hidden>Your workshop pass is confirmed and your receipt is on its way to your email. We&rsquo;ll be in touch to help you choose your workshops.</p>
     <p data-ty="reservation" hidden>We received your reservation request. We will email you to confirm your spot within 24 hours.</p>
   </div>
 </section>

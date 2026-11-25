@@ -274,7 +274,7 @@
   if (ty) {
     var q = new URLSearchParams(location.search);
     var nm = q.get('name');
-    var t = ({ reservation: 1, wedding: 1 })[q.get('type')] ? q.get('type') : 'inquiry';
+    var t = ({ reservation: 1, wedding: 1, booked: 1, pass: 1 })[q.get('type')] ? q.get('type') : 'inquiry';
     var h = $('[data-ty-title]', ty);
     h.textContent = nm ? 'Thank you, ' + nm : 'Thank you';
     $$('[data-ty]', ty).forEach(function (n) { n.hidden = n.getAttribute('data-ty') !== t; });
