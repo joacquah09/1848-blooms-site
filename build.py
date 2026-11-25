@@ -462,15 +462,15 @@ page('floral-bar.html', 'Floral Bar', 'The Floral Bar by 1848 Blooms & Designs: 
 # empty and the button opens the reservation form with the workshop filled in.
 WORKSHOPS = [
     dict(slug='winter-garden', title='Winter Garden Arrangement', date='Sat, Jan 17, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=0, img='bouquet-white-b',
+         place='Location TBD', price=175, seats=12, booked=0, img='bouquet-white-b',
          alt='A white bouquet of roses and wildflowers with greenery',
          blurb='A seasonal arrangement with textured blooms and winter greenery.', book='https://book.stripe.com/00weVdfAD5rq4ag9sp1kA09'),
     dict(slug='romantic-roses', title='Romantic Garden Roses', date='Sat, Feb 14, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=0, img='pastel-closeup',
+         place='Location TBD', price=175, seats=12, booked=0, img='pastel-closeup',
          alt='Pink garden roses and blue glassware on a pastel table',
          blurb='Create a lush, garden-inspired arrangement featuring romantic roses and seasonal blooms.', book='https://book.stripe.com/6oUfZh0FJ3ji2288ol1kA0a'),
     dict(slug='spring-bloom', title='Spring in Bloom', date='Sat, Mar 14, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=0, img='ranunculus-jar',
+         place='Location TBD', price=175, seats=12, booked=0, img='ranunculus-jar',
          alt='White ranunculus in a clear glass jar',
          blurb='A fresh spring arrangement that celebrates the season’s first blooms.', book='https://book.stripe.com/cNi14n1JN4nmeOU4851kA0b'),
 ]
