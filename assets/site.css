@@ -628,3 +628,19 @@ h1{font-size:clamp(1.9rem,1rem + 2.8vw,3.5rem)}
 .hero .btn:hover{background:var(--magenta-d)}
 .choice input:checked+span{background:var(--magenta);border-color:var(--magenta);color:var(--ink)}
 .choice span:hover{border-color:var(--magenta)}
+
+/* ---------- one pink, everywhere ----------
+   Every button is the same solid #BE92A4 with dark text, whatever the
+   background (cream, petal, sage, photo). Accents use the same pink. */
+.btn,.btn--ghost,.btn--cream,.btn--rose,.hero .btn,.panel .btn,.panel--sage .btn{background:var(--magenta);border-color:var(--magenta);color:var(--ink);opacity:1;backdrop-filter:none}
+.btn:hover,.btn--ghost:hover,.btn--cream:hover,.btn--rose:hover,.hero .btn:hover,.panel .btn:hover,.panel--sage .btn:hover{background:var(--magenta-d);border-color:var(--magenta-d);color:var(--ink)}
+.btn--off{background:var(--magenta);border-color:var(--magenta);opacity:.55}
+:focus-visible{outline-color:var(--magenta-d)}
+.link:hover,.social a:hover,.mnav li a:hover,.rail-ctl button:hover,.f-mid a:hover{color:var(--magenta-d);text-decoration-color:var(--magenta-d)}
+.steps li::before{color:var(--magenta-d)}
+.rc .stars,.rc .more{color:var(--magenta-d)}
+.legal{background:var(--magenta);color:var(--ink)}
+.ex-benefits svg{stroke:var(--magenta-d)}
+.ws__bar i{background:var(--magenta)}
+.ws__tag{background:var(--magenta);color:var(--ink)}
+.choice input:checked+span{background:var(--magenta);border-color:var(--magenta);color:var(--ink)}
