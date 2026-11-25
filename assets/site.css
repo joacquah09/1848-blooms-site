@@ -518,6 +518,10 @@ h1{font-size:clamp(1.9rem,1rem + 2.8vw,3.5rem)}
 .rc .more{justify-self:center;background:none;border:0;padding:0;font:400 .6rem var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--rose-d);text-decoration:underline;text-underline-offset:4px;cursor:pointer}
 .rc .more[hidden]{display:block;visibility:hidden}
 .rc cite{padding-top:1rem;border-top:1px solid var(--line)}
+.band-sand{background:var(--petal-2)}
+.band-sand .principles h3{color:var(--ink)}
+.band-sand .principles p{color:var(--body-c)}
+.band-sand .principles>div{border-color:var(--line)}
 .rc .stars{letter-spacing:.12em;color:var(--rose-d)}
 .social a[aria-label="TikTok"] svg,.social a[aria-label="LinkedIn"] svg{width:14px;height:14px;margin-top:1px}
 .form-grid--flip{grid-template-columns:4fr 7fr}

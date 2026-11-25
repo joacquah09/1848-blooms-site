@@ -7,7 +7,9 @@
      like "https://formspree.io/f/xxxxxxx") and both forms will send their
      answers there as JSON. While it is empty, the forms run in preview mode:
      nothing is sent, and a notice tells the visitor so. */
-  var FORM_ENDPOINT = '';
+  var FORM_ENDPOINT = 'https://formsubmit.co/ajax/ireneacquah@1848bloomsanddesigns.com';
+  /* Copies of every submission also go to these addresses. */
+  var FORM_CC = 'jonasacquah@1848bloomsanddesigns.com';
 
   var doc = document, body = doc.body;
   var $ = function (s, c) { return (c || doc).querySelector(s); };
@@ -204,12 +206,17 @@
         var data = {};
         new FormData(form).forEach(function (v, k) { data[k] = v; });
         delete data.website;
+        data._subject = type === 'reservation' ? 'New reservation request from the website' : 'New inquiry from the website';
+        data._template = 'table';
+        if (FORM_CC) data._cc = FORM_CC;
+        if (data.email) data._replyto = data.email;
         var b = $('button[type=submit]', form);
         b.disabled = true; b.textContent = 'Sending';
         fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data) })
-          .then(function (r) { if (!r.ok) throw new Error(); go(); })
+          .then(function (r) { if (!r.ok) throw new Error(); return r.json().catch(function () { return {}; }); })
+          .then(function (j) { if (j && (j.success === false || j.success === 'false')) throw new Error(); go(); })
           .catch(function () {
-            b.disabled = false; b.textContent = type === 'reservation' ? 'Reserve my spot' : 'Send inquiry';
+            b.disabled = false; b.textContent = type === 'reservation' ? 'Reserve my spot' : 'Send';
             notice.textContent = 'Your message did not send. Check your connection and try again, or email us directly.';
             notice.classList.add('on');
           });

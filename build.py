@@ -6,7 +6,7 @@ from PIL import Image
 OUT = os.path.dirname(os.path.abspath(__file__))
 IMG = OUT + '/assets/img'
 SITE = '1848 Blooms & Designs'
-WED_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSezvMAhJgHH2pi5c92ohipBKujeKQc1tmaTfEVaxycdIquB6Q/viewform?usp=header'
+WED_FORM = 'https://forms.gle/UiDG7YtrH4x2rDiN8'
 WED_ATTR = f'href="{html.escape(WED_FORM)}" target="_blank" rel="noopener"'
 EMAIL = 'ireneacquah@1848bloomsanddesigns.com'
 AREA = 'Delaware, Pennsylvania &amp; Beyond'
@@ -93,7 +93,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 <meta property="og:image" content="assets/img/{og}.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=9">
+<link rel="stylesheet" href="assets/site.css?v=10">
 </head>
 <body>
 {header(fname)}
@@ -141,7 +141,7 @@ home = f'''
   {im('home-banner', 'A long white table set with candles, glassware and a low arrangement of yellow, peach and white flowers beside a window', 'hero__img', eager=True)}
   <div class="hero__body">
     <span class="eyebrow">{AREA} &middot; Now booking 2026</span>
-    <h1>Nature inspired garden style <span class="script">florals.</span></h1>
+    <h1>Nature inspired garden style florals</h1>
     <div class="btn-row">
       <a class="btn btn--arrow" href="services.html">Weddings + events</a>
       <a class="btn btn--arrow" href="floral-bar.html">Floral Bar</a>
@@ -225,7 +225,7 @@ about = f'''
 {phero('table-long-pastel', 'A long white table set with pastel centerpieces and wishbone chairs in a bright room', 'About 1848', 'Delaware, Pennsylvania<br>&amp; Beyond', 'Floral<br>design studio',
        '1848 Blooms &amp; Designs creates florals for weddings and events, and teaches hands-on floral experiences.')}
 
-<section class="section band-moss">
+<section class="section band-sand">
   <div class="wrap">
     {tbar('How we design', 'Our approach', 'In three parts')}
     <div class="principles" style="margin-top:clamp(2.5rem,5vw,4.5rem)">
@@ -239,7 +239,7 @@ about = f'''
 <section class="full-img">{im('table-window', 'A bright table by a window set with glassware and a centerpiece of yellow and orange flowers', extra='style="object-position:50% 70%"')}</section>
 
 <section class="panels">
-  <div class="panel panel--img">{im('designer-smile', 'The designer smiling in a beige apron, holding a bouquet of white, yellow and orange flowers')}</div>
+  <div class="panel panel--img">{im('designer-smile', 'Irene Acquah smiling in a beige apron, holding a bouquet of white, yellow and orange flowers', extra='style="object-position:50% 8%"')}</div>
   <div class="panel panel--petal panel--center"><div>
     <h2 class="dsp">Meet the lead designer behind 1848</h2>
     <div class="btn-row"><a class="btn" href="designer.html">Meet the designer</a></div>
@@ -283,9 +283,9 @@ page('designer.html', 'Meet the designer', 'Meet Irene Acquah, lead designer of 
 
 # ================================================================== SERVICES
 services = f'''
-{phero('arch-pampas', 'A wooden triangle ceremony arch dressed with pampas grass and dried flowers on a deck', 'Services', 'Weddings', 'Events',
+{phero('pastel-table-b', 'A white table set with a tall arrangement of pink, peach and white flowers, taper candles and pink napkins', 'Services', 'Weddings', 'Events',
        'Full-service florals, from a single bouquet to a ceremony and reception, designed around life’s most meaningful moments our clients cherish.',
-       f'<a class="btn" {WED_ATTR}>Start an inquiry</a>')}
+       '<a class="btn" href="contact.html#general">Start an inquiry</a>')}
 
 <section id="weddings" class="panels">
   <div class="panel panel--img" style="min-height:680px">{im('kiss-arch', 'A couple kissing under a wooden arch draped in white fabric and white flowers')}</div>
@@ -343,7 +343,7 @@ services = f'''
   </div>
 </section>
 
-{closer('Ready to talk florals?', 'Inquire now', WED_FORM, 'band-petal')}
+{closer('Ready to talk florals?', 'Inquire now', 'contact.html#general', 'band-petal')}
 '''
 page('services.html', 'Services', 'Wedding and event floral design in Delaware, Pennsylvania and beyond: bouquets, ceremony florals, reception florals and installations.', services)
 
