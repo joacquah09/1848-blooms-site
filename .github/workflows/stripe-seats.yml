@@ -1,5 +1,6 @@
 # Every hour: read seat counts from Stripe, rebuild the site, and commit if anything changed.
-# Needs the repository secret STRIPE_READ_KEY (a read-only Stripe restricted key).
+# Needs a read-only Stripe restricted key saved as the repository secret
+# STRIPE_READ_KEY or WEBSITE_SEAT_COUNTS.
 name: Update workshop seats from Stripe
 
 on:
@@ -25,7 +26,7 @@ jobs:
       - run: pip install pillow
       - name: Read seats from Stripe
         env:
-          STRIPE_READ_KEY: ${{ secrets.STRIPE_READ_KEY }}
+          STRIPE_READ_KEY: ${{ secrets.STRIPE_READ_KEY || secrets.WEBSITE_SEAT_COUNTS }}
         run: python scripts/stripe_sync.py
       - run: python build.py
       - name: Commit changes
