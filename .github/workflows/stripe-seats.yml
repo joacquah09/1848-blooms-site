@@ -1,0 +1,41 @@
+# Every hour: read seat counts from Stripe, rebuild the site, and commit if anything changed.
+# Needs the repository secret STRIPE_READ_KEY (a read-only Stripe restricted key).
+name: Update workshop seats from Stripe
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stripe-seats
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pillow
+      - name: Read seats from Stripe
+        env:
+          STRIPE_READ_KEY: ${{ secrets.STRIPE_READ_KEY }}
+        run: python scripts/stripe_sync.py
+      - run: python build.py
+      - name: Commit changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "seat-sync"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Update workshop seats from Stripe"
+            git push
+          else
+            echo "No changes."
+          fi

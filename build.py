@@ -474,6 +474,15 @@ WORKSHOPS = [
          alt='White ranunculus in a clear glass jar',
          blurb='A fresh spring arrangement that celebrates the season’s first blooms.', book=''),
 ]
+# Live seat counts from Stripe (written hourly by scripts/stripe_sync.py).
+# A workshop's capacity is the payment limit on its Stripe Payment Link.
+_seats_file = 'data/workshop-seats.json'
+if os.path.exists(_seats_file):
+    import json
+    _live = json.load(open(_seats_file))
+    for _w in WORKSHOPS:
+        _w.update({k: v for k, v in _live.get(_w['slug'], {}).items() if k in ('seats', 'booked', 'closed')})
+
 PASSES = [
     dict(slug='pass-4', title='Four-workshop pass', price=660, save=40, book=''),
     dict(slug='pass-6', title='Six-workshop pass', price=960, save=90, book=''),
@@ -492,7 +501,7 @@ def book_href(item, kind):
     return f'href="reserve.html?experience={kind}&amp;item={item["slug"]}"'
 
 def ws_row(w):
-    left = w['seats'] - w['booked']
+    left = 0 if w.get('closed') else max(0, w['seats'] - w['booked'])
     pct = round(100 * w['booked'] / w['seats'])
     plural = 's' if left != 1 else ''
     tag = ('Sold out' if left <= 0 else f'Only {left} spot{plural} left' if left <= 4
