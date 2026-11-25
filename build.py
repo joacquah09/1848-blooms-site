@@ -462,15 +462,15 @@ page('floral-bar.html', 'Floral Bar', 'The Floral Bar by 1848 Blooms & Designs: 
 # empty and the button opens the reservation form with the workshop filled in.
 WORKSHOPS = [
     dict(slug='winter-garden', title='Winter Garden Arrangement', date='Sat, Jan 17, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=8, img='bouquet-white-b',
+         place='New Hope, PA', price=175, seats=12, booked=0, img='bouquet-white-b',
          alt='A white bouquet of roses and wildflowers with greenery',
          blurb='A seasonal arrangement with textured blooms and winter greenery.', book=''),
     dict(slug='romantic-roses', title='Romantic Garden Roses', date='Sat, Feb 14, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=6, img='pastel-closeup',
+         place='New Hope, PA', price=175, seats=12, booked=0, img='pastel-closeup',
          alt='Pink garden roses and blue glassware on a pastel table',
          blurb='Create a lush, garden-inspired arrangement featuring romantic roses and seasonal blooms.', book=''),
     dict(slug='spring-bloom', title='Spring in Bloom', date='Sat, Mar 14, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=10, img='ranunculus-jar',
+         place='New Hope, PA', price=175, seats=12, booked=0, img='ranunculus-jar',
          alt='White ranunculus in a clear glass jar',
          blurb='A fresh spring arrangement that celebrates the season’s first blooms.', book=''),
 ]
@@ -494,7 +494,9 @@ def book_href(item, kind):
 def ws_row(w):
     left = w['seats'] - w['booked']
     pct = round(100 * w['booked'] / w['seats'])
-    tag = f'Only {left} spot{"s" if left != 1 else ""} left' if left > 0 else 'Sold out'
+    plural = 's' if left != 1 else ''
+    tag = ('Sold out' if left <= 0 else f'Only {left} spot{plural} left' if left <= 4
+           else f'{left} spots available' if w['booked'] == 0 else f'{left} spots left')
     btn = (f'<a class="btn" {book_href(w, "workshop")}>Book now</a>' if left > 0
            else '<span class="btn btn--off" aria-disabled="true">Sold out</span>')
     return f'''<article class="ws">
