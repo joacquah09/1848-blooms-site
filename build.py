@@ -283,7 +283,7 @@ page('designer.html', 'Meet the designer', 'Meet Irene Acquah, lead designer of 
 
 # ================================================================== SERVICES
 services = f'''
-{phero('table-long-pastel', 'A long white table set with pastel centerpieces and wishbone chairs in a bright room', 'Services', 'Weddings', 'Events',
+{phero('centerpiece-wide-a', 'A low arrangement of yellow, peach and white garden flowers on a white table set with glassware', 'Services', 'Weddings', 'Events',
        'Full-service florals, from a single bouquet to a ceremony and reception, designed around life’s most meaningful moments our clients cherish.',
        '<a class="btn" href="contact.html#general">Start an inquiry</a>')}
 
