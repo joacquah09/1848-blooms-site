@@ -57,7 +57,7 @@ def header(cur):
 <nav class="primary" aria-label="Main">{links}</nav>
 <nav class="mnav" id="mnav" aria-label="Menu">
   <ul>{m}</ul>
-  <div class="foot-line"><span>Serving {AREA}</span><span>Now booking 2026</span></div>
+  <div class="foot-line"><span>Serving {AREA}</span><span>Now booking 2027</span></div>
 </nav>'''
 
 
@@ -71,7 +71,7 @@ def footer():
     <div class="f-btns"><a class="btn" href="reserve.html">Reserve your spot</a><a class="btn" {WED_ATTR}>Wedding inquiry</a></div>
   </div>
   <div class="f-thumbs">{thumbs}</div>
-  <div class="legal"><span>&copy; <span data-year>2026</span> 1848 Blooms &amp; Designs</span><span>Serving {AREA} &middot; Now booking 2026</span></div>
+  <div class="legal"><span>&copy; <span data-year>2026</span> 1848 Blooms &amp; Designs</span><span>Serving {AREA} &middot; Now booking 2027</span></div>
 </footer>'''
 
 
@@ -204,7 +204,7 @@ home = f'''
 <section class="hero">
   {im('home-banner', 'A long white table set with candles, glassware and a low arrangement of yellow, peach and white flowers beside a window', 'hero__img', eager=True)}
   <div class="hero__body">
-    <span class="eyebrow">{AREA} &middot; Now booking 2026</span>
+    <span class="eyebrow">{AREA} &middot; Now booking 2027</span>
     <h1>Nature inspired garden style florals</h1>
     <div class="btn-row">
       <a class="btn btn--arrow" href="services.html">Weddings + events</a>
@@ -462,15 +462,15 @@ page('floral-bar.html', 'Floral Bar', 'The Floral Bar by 1848 Blooms & Designs: 
 # empty and the button opens the reservation form with the workshop filled in.
 WORKSHOPS = [
     dict(slug='winter-garden', title='Winter Garden Arrangement', date='Sat, Jan 17, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=0, img='bouquet-white-b',
+         place='Location TBD', price=175, seats=12, booked=0, img='bouquet-white-b',
          alt='A white bouquet of roses and wildflowers with greenery',
          blurb='A seasonal arrangement with textured blooms and winter greenery.', book='https://book.stripe.com/00weVdfAD5rq4ag9sp1kA09'),
     dict(slug='romantic-roses', title='Romantic Garden Roses', date='Sat, Feb 14, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=0, img='pastel-closeup',
+         place='Location TBD', price=175, seats=12, booked=0, img='pastel-closeup',
          alt='Pink garden roses and blue glassware on a pastel table',
          blurb='Create a lush, garden-inspired arrangement featuring romantic roses and seasonal blooms.', book='https://book.stripe.com/6oUfZh0FJ3ji2288ol1kA0a'),
     dict(slug='spring-bloom', title='Spring in Bloom', date='Sat, Mar 14, 2027', time='2:00 – 4:00 PM',
-         place='New Hope, PA', price=175, seats=12, booked=0, img='ranunculus-jar',
+         place='Location TBD', price=175, seats=12, booked=0, img='ranunculus-jar',
          alt='White ranunculus in a clear glass jar',
          blurb='A fresh spring arrangement that celebrates the season’s first blooms.', book='https://book.stripe.com/cNi14n1JN4nmeOU4851kA0b'),
 ]
@@ -638,7 +638,7 @@ page('portfolio.html', 'Portfolio', 'Weddings, events, bouquets and floral detai
 # ================================================================== CONTACT
 contact = f'''
 <section class="phero phero--plain">
-  <div class="phero__mid"><span class="eyebrow">Inquiries &middot; Now booking 2026</span><div class="tbar"><h1 class="dsp">Get in touch</h1></div></div>
+  <div class="phero__mid"><span class="eyebrow">Inquiries &middot; Now booking 2027</span><div class="tbar"><h1 class="dsp">Get in touch</h1></div></div>
   <div class="phero__foot">
     <p>We are looking forward to hearing from you!</p>
     <p>For weddings, please visit our <a class="link" href="services.html#weddings">wedding page here</a> and complete our <a class="link" {WED_ATTR}>wedding inquiry form here</a>.<br>For general inquiries, send us a <a class="link" href="#general">message here</a>.</p>
