@@ -93,7 +93,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 <meta property="og:image" content="assets/img/{og}.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=14">
+<link rel="stylesheet" href="assets/site.css?v=15">
 </head>
 <body>
 {header(fname)}
@@ -214,7 +214,7 @@ home = f'''
 
 <section class="closing">
   {im('centerpiece-wide-b', 'A wide table with a lush centerpiece of roses, pampas and greenery')}
-  <div><span class="script">Let’s design florals they’ll remember.</span><a class="btn btn--cream btn--arrow" href="contact.html">Inquire now</a></div>
+  <div><span class="script">Let’s design florals they’ll remember.</span><a class="btn btn--arrow" href="contact.html">Inquire now</a></div>
 </section>
 '''
 page('index.html', 'Florals for weddings, events and experiences',
