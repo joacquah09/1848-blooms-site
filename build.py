@@ -101,7 +101,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 {body}
 </main>
 {footer()}
-<script src="assets/site.js"></script>
+<script src="assets/site.js?v=2"></script>
 </body>
 </html>
 ''')
@@ -585,7 +585,7 @@ contact = f'''
       <form class="form" data-form="inquiry" novalidate>
       <div class="field"><label for="name">Your name</label><input id="name" name="name" autocomplete="name" required><p class="err">Enter your name.</p></div>
       <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required><p class="err">Enter a valid email address.</p></div>
-      <div class="field"><label for="phone">Phone <span class="hint">(optional)</span></label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+      <div class="field"><label for="phone">Phone</label><input id="phone" name="phone" type="tel" autocomplete="tel"></div>
       <div class="field"><label for="kind">What are you planning?</label>
         <select id="kind" name="event_type" required>
           <option value="">Choose one</option>
@@ -630,7 +630,7 @@ reserve = f'''
       <div class="field"><label for="rguests">Number of guests</label><input id="rguests" name="guests" type="number" min="1" value="1" inputmode="numeric" required><p class="err">Enter how many guests.</p></div>
       <div class="field"><label for="rname">Your name</label><input id="rname" name="name" autocomplete="name" required><p class="err">Enter your name.</p></div>
       <div class="field"><label for="remail">Email</label><input id="remail" name="email" type="email" autocomplete="email" required><p class="err">Enter a valid email address.</p></div>
-      <div class="field"><label for="rphone">Phone <span class="hint">(optional)</span></label><input id="rphone" name="phone" type="tel" autocomplete="tel"></div>
+      <div class="field"><label for="rphone">Phone</label><input id="rphone" name="phone" type="tel" autocomplete="tel"></div>
       <div class="field full"><label for="rnotes">Anything we should know?</label><textarea id="rnotes" name="notes" placeholder="The occasion, accessibility needs, or questions."></textarea></div>
       <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
       <div class="notice" role="status"></div>

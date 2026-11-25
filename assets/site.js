@@ -9,6 +9,7 @@
      nothing is sent, and a notice tells the visitor so. */
   var FORM_ENDPOINT = 'https://formsubmit.co/ajax/ireneacquah@1848bloomsanddesigns.com';
   /* Copies of every submission also go to these addresses. */
+  var FORM_TO = FORM_ENDPOINT.split('/').pop();
   var FORM_CC = 'jonasacquah@1848bloomsanddesigns.com';
 
   var doc = document, body = doc.body;
@@ -237,11 +238,19 @@
         var b = $('button[type=submit]', form);
         b.disabled = true; b.textContent = 'Sending';
         fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data) })
-          .then(function (r) { if (!r.ok) throw new Error(); return r.json().catch(function () { return {}; }); })
-          .then(function (j) { if (j && (j.success === false || j.success === 'false')) throw new Error(); go(); })
-          .catch(function () {
+          .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j = j || {}; j._ok = r.ok; return j; }); })
+          .then(function (j) {
+            if (j._ok && !(j.success === false || j.success === 'false')) { go(); return; }
+            var err = new Error(j.message || 'send failed'); err.reply = j; throw err;
+          })
+          .catch(function (err) {
+            if (window.console) console.warn('Form service reply:', err && err.reply ? err.reply : err);
             b.disabled = false; b.textContent = type === 'reservation' ? 'Reserve my spot' : 'Send';
-            notice.textContent = 'Your message did not send. Check your connection and try again, or email us directly.';
+            var msg = String(err && err.message || '');
+            var mail = '<a class="link" href="mailto:' + FORM_TO + '">' + FORM_TO + '</a>';
+            notice.innerHTML = /activat/i.test(msg)
+              ? 'Almost there: this form is still being switched on, so your message was not delivered yet. Please email us at ' + mail + ' in the meantime.'
+              : 'Your message did not send. Please try again in a moment, or email us at ' + mail + '.';
             notice.classList.add('on');
           });
       } else {
