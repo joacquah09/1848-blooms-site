@@ -1,0 +1,14 @@
+{
+  "romantic-roses": {
+    "booked": 0,
+    "seats": 12
+  },
+  "spring-bloom": {
+    "booked": 0,
+    "seats": 12
+  },
+  "winter-garden": {
+    "booked": 0,
+    "seats": 12
+  }
+}
