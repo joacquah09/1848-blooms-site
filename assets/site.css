@@ -645,3 +645,8 @@ h1{font-size:clamp(1.9rem,1rem + 2.8vw,3.5rem)}
 .ws__tag{background:var(--magenta);color:var(--ink)}
 .choice input:checked+span{background:var(--magenta);border-color:var(--magenta);color:var(--ink)}
 .ws-note{margin:1.2rem 0 0;font-style:italic;color:var(--ink-2);font-size:1rem}
+.wf-h{font-size:clamp(1.5rem,1rem + 1.4vw,2.1rem);margin:.6rem 0 -.4rem}
+.wf-h:first-child{margin-top:0}
+.wf-note{margin:-.8rem 0 0;font-style:italic;font-size:.98rem;color:var(--ink-2)}
+fieldset.field{border:0;padding:0;margin:0;min-width:0}
+fieldset.field .choice{margin-top:.6rem}

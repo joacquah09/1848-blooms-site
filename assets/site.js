@@ -203,7 +203,7 @@
         var inp = $('input,select,textarea', f);
         if (!inp || !inp.required) return;
         var bad;
-        if (inp.type === 'radio') {
+        if (inp.type === 'radio' || inp.type === 'checkbox') {
           bad = !$$('input[name="' + inp.name + '"]', f).some(function (r) { return r.checked; });
         } else {
           bad = !inp.value.trim() || (inp.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value));
@@ -229,9 +229,9 @@
 
       if (FORM_ENDPOINT) {
         var data = {};
-        new FormData(form).forEach(function (v, k) { data[k] = v; });
+        new FormData(form).forEach(function (v, k) { data[k] = (k in data) ? data[k] + ', ' + v : v; });
         delete data.website;
-        data._subject = type === 'reservation' ? 'New reservation request from the website' : 'New inquiry from the website';
+        data._subject = type === 'reservation' ? 'New reservation request from the website' : type === 'wedding' ? 'New wedding & event inquiry from the website' : 'New inquiry from the website';
         data._template = 'table';
         if (FORM_CC) data._cc = FORM_CC;
         if (data.email) data._replyto = data.email;
@@ -245,7 +245,7 @@
           })
           .catch(function (err) {
             if (window.console) console.warn('Form service reply:', err && err.reply ? err.reply : err);
-            b.disabled = false; b.textContent = type === 'reservation' ? 'Reserve my spot' : 'Send';
+            b.disabled = false; b.textContent = type === 'reservation' ? 'Reserve my spot' : type === 'wedding' ? 'Send my inquiry' : 'Send';
             var msg = String(err && err.message || '');
             var mail = '<a class="link" href="mailto:' + FORM_TO + '">' + FORM_TO + '</a>';
             notice.innerHTML = /activat/i.test(msg)
@@ -274,7 +274,7 @@
   if (ty) {
     var q = new URLSearchParams(location.search);
     var nm = q.get('name');
-    var t = q.get('type') === 'reservation' ? 'reservation' : 'inquiry';
+    var t = ({ reservation: 1, wedding: 1 })[q.get('type')] ? q.get('type') : 'inquiry';
     var h = $('[data-ty-title]', ty);
     h.textContent = nm ? 'Thank you, ' + nm : 'Thank you';
     $$('[data-ty]', ty).forEach(function (n) { n.hidden = n.getAttribute('data-ty') !== t; });
