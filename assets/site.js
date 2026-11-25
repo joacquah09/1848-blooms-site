@@ -279,6 +279,118 @@
     h.textContent = nm ? 'Thank you, ' + nm : 'Thank you';
     $$('[data-ty]', ty).forEach(function (n) { n.hidden = n.getAttribute('data-ty') !== t; });
   }
+  /* ---- Wedding & event inquiry pop-up ---- */
+  var wm = $('#wm');
+  if (wm && typeof wm.showModal === 'function') {
+    var wf = $('form[data-wm]', wm);
+    var steps = $$('.wm__step', wm).filter(function (s) { return s.getAttribute('data-step') !== 'done'; });
+    var total = steps.length, cur = 0;
+    var nextB = $('[data-wm-next]', wm), backB = $('[data-wm-back]', wm), wnote = $('.notice', wm);
+    var fileIn = $('input[type=file]', wm), fileTxt = $('[data-files]', wm);
+    var fileHint = fileTxt ? fileTxt.textContent : '';
+    var MAX = 5 * 1024 * 1024;
+
+    var show = function (i) {
+      cur = i;
+      steps.forEach(function (s, k) { s.hidden = k !== i; });
+      $('[data-step="done"]', wm).hidden = true;
+      $('.wm__bar i', wm).style.width = ((i + 1) / total * 100) + '%';
+      $('.wm__bar', wm).setAttribute('aria-valuenow', i + 1);
+      $('[data-wm-n]', wm).textContent = i + 1;
+      backB.hidden = i === 0;
+      nextB.textContent = i === total - 1 ? 'Send my inquiry' : 'Next';
+      wnote.classList.remove('on');
+      $('.wm__body', wm).scrollTop = 0;
+      var t = $('.wm__title', steps[i]); if (t) t.focus({ preventScroll: true });
+    };
+    var openWm = function () { if (!wm.open) { wm.showModal(); body.classList.add('wm-open'); show(cur); } };
+    var closeWm = function () { if (wm.open) wm.close(); };
+    wm.addEventListener('close', function () { body.classList.remove('wm-open'); });
+    $$('[data-wm-open]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); openWm(); }); });
+    $$('[data-wm-close]', wm).forEach(function (b) { b.addEventListener('click', closeWm); });
+    wm.addEventListener('click', function (e) { if (e.target === wm) closeWm(); });
+    backB.addEventListener('click', function () { if (cur > 0) show(cur - 1); });
+    if ($('[data-wm-auto]')) openWm();
+
+    if (fileIn) fileIn.addEventListener('change', function () {
+      var n = fileIn.files.length;
+      fileTxt.textContent = n ? n + ' photo' + (n > 1 ? 's' : '') + ' selected' : fileHint;
+    });
+
+    var checkStep = function () {
+      var ok = true, first = null;
+      $$('.field', steps[cur]).forEach(function (f) {
+        var bad = false, inps = $$('input,textarea,select', f);
+        if (f.hasAttribute('data-insp')) {
+          var link = $('input[type=url]', f).value.trim(), files = fileIn ? fileIn.files : [];
+          var big = Array.prototype.some.call(files, function (x) { return x.size > MAX; });
+          bad = (!link && !files.length) || big || files.length > 5;
+          $('.err', f).textContent = big ? 'Each photo must be 5 MB or smaller.' : files.length > 5 ? 'Please choose up to 5 photos.' : 'Add a Pinterest link or upload at least one photo.';
+        } else if (inps[0] && (inps[0].type === 'radio' || inps[0].type === 'checkbox')) {
+          bad = !inps.some(function (r) { return r.checked; });
+        } else if (inps[0] && inps[0].required) {
+          bad = !inps[0].value.trim() || (inps[0].type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inps[0].value));
+        }
+        f.classList.toggle('invalid', bad);
+        if (bad && !first) first = inps[0];
+      });
+      if (first) first.focus();
+      return ok && !first;
+    };
+
+    var done = function () {
+      var n = (wf.elements.name.value || '').trim().split(' ')[0];
+      $('[data-wm-who]', wm).textContent = n ? ', ' + n : '';
+      steps.forEach(function (s) { s.hidden = true; });
+      $('[data-step="done"]', wm).hidden = false;
+      $('.wm__nav', wm).hidden = true; $('.wm__count', wm).hidden = true;
+      $('.wm__bar i', wm).style.width = '100%';
+    };
+
+    wf.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (wf.elements.website.value) return; // honeypot
+      if (!checkStep()) return;
+      if (cur < total - 1) { show(cur + 1); return; }
+
+      var subject = 'New wedding & event inquiry from the website';
+      var elements = $$('input[name="floral_elements"]:checked', wf).map(function (c) { return c.value; }).join(', ');
+      nextB.disabled = true; nextB.textContent = 'Sending';
+
+      if (fileIn && fileIn.files.length) {
+        /* photos attached: send as a normal form post so the files travel with it */
+        var add = function (k, v) { var h = doc.createElement('input'); h.type = 'hidden'; h.name = k; h.value = v; wf.appendChild(h); };
+        $$('input[name="floral_elements"]', wf).forEach(function (c) { c.disabled = true; });
+        $('input[name="website"]', wf).disabled = true;
+        add('floral_elements', elements);
+        add('_subject', subject); add('_template', 'table'); add('_captcha', 'false');
+        if (FORM_CC) add('_cc', FORM_CC);
+        add('_replyto', wf.elements.email.value);
+        var nm = (wf.elements.name.value || '').trim().split(' ')[0];
+        add('_next', new URL('thank-you.html?type=wedding' + (nm ? '&name=' + encodeURIComponent(nm) : ''), location.href).href);
+        wf.action = 'https://formsubmit.co/' + FORM_TO;
+        wf.method = 'post'; wf.enctype = 'multipart/form-data';
+        HTMLFormElement.prototype.submit.call(wf);
+        return;
+      }
+
+      var data = {};
+      new FormData(wf).forEach(function (v, k) { if (k !== 'website' && k !== 'attachment' && k !== 'floral_elements') data[k] = v; });
+      data.floral_elements = elements;
+      data._subject = subject; data._template = 'table';
+      if (FORM_CC) data._cc = FORM_CC;
+      data._replyto = data.email;
+      fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(data) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || j.success === false || j.success === 'false') throw new Error(j.message || 'failed'); }); })
+        .then(done)
+        .catch(function () {
+          nextB.disabled = false; nextB.textContent = 'Send my inquiry';
+          wnote.innerHTML = 'Your inquiry did not send. Please try again, or email us at <a class="link" href="mailto:' + FORM_TO + '">' + FORM_TO + '</a>.';
+          wnote.classList.add('on');
+        });
+    });
+  }
+
 })();
 
 /* review cards: show "Read more" only when the quote is clamped */

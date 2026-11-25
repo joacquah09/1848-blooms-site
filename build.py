@@ -6,7 +6,7 @@ from PIL import Image
 OUT = os.path.dirname(os.path.abspath(__file__))
 IMG = OUT + '/assets/img'
 SITE = '1848 Blooms & Designs'
-WED_ATTR = 'href="wedding.html"'
+WED_ATTR = 'href="wedding.html" data-wm-open'
 EMAIL = 'ireneacquah@1848bloomsanddesigns.com'
 AREA = 'Delaware, Pennsylvania &amp; Beyond'
 _d = {}
@@ -92,7 +92,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 <meta property="og:image" content="assets/img/{og}.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=20">
+<link rel="stylesheet" href="assets/site.css?v=21">
 </head>
 <body>
 {header(fname)}
@@ -100,13 +100,78 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 {body}
 </main>
 {footer()}
-<script src="assets/site.js?v=3"></script>
+{wedding_modal()}
+<script src="assets/site.js?v=4"></script>
 </body>
 </html>
 ''')
 
 
 # ---------- components ----------
+# ---------- wedding & event inquiry pop-up (one copy on every page) ----------
+def _opts(name, items, kind='radio', cls=''):
+    return ''.join(f'<label class="{cls}"><input type="{kind}" name="{name}" value="{html.escape(o)}"><span>{html.escape(o)}</span></label>' for o in items)
+
+def _step(n, kicker, title, desc, inner):
+    return f"""<section class="wm__step" data-step="{n}"{' hidden' if n > 1 else ''}>
+      <p class="wm__kicker">{kicker}</p>
+      <h2 class="wm__title" tabindex="-1">{title}</h2>
+      <p class="wm__desc">{desc}</p>
+      <div class="wm__fields">{inner}</div>
+    </section>"""
+
+def wedding_modal():
+    steps = [
+        _step(1, 'Let&rsquo;s start with you', 'Welcome', 'We&rsquo;re honored you&rsquo;re considering 1848 Blooms &amp; Designs. We design refined, nature-inspired floral experiences for weddings and events. A few details so we know how to reach you.', """
+        <div class="field"><label for="wm-name">Full name</label><input id="wm-name" name="name" autocomplete="name" required><p class="err">Enter your full name.</p></div>
+        <div class="field"><label for="wm-email">Email address</label><input id="wm-email" name="email" type="email" autocomplete="email" required><p class="err">Enter a valid email address.</p></div>
+        <div class="field"><label for="wm-phone">Phone number</label><input id="wm-phone" name="phone" type="tel" autocomplete="tel" required><p class="err">Enter your phone number.</p></div>"""),
+        _step(2, 'Tell us about your event', 'Your event', 'This is where your vision begins to take shape.', f"""
+        <fieldset class="field"><legend>Event type</legend><div class="wm-chips">{_opts('event_type', ['Wedding', 'Bridal Shower', 'Baby Shower', 'Dinner Party', 'Corporate Event', 'Other'])}</div><p class="err">Choose your event type.</p></fieldset>
+        <div class="field"><label for="wm-date">Event date</label><input id="wm-date" name="event_date" type="date" required><p class="err">Choose your event date.</p></div>
+        <div class="field"><label for="wm-venue">Event location (venue and city)</label><input id="wm-venue" name="event_location" placeholder="The Barn at Spring Brook, Kennett Square" required><p class="err">Enter the venue and city.</p></div>"""),
+        _step(3, 'Your vision &amp; aesthetic', 'Your vision', 'Tell us how you picture the day.', """
+        <div class="field"><label for="wm-words">Describe your event in a few words</label><textarea id="wm-words" name="event_description" rows="3" placeholder="Elegant, modern, romantic, minimal" required></textarea><p class="err">Give us a few words.</p></div>
+        <div class="field"><label for="wm-colors">Color palette</label><input id="wm-colors" name="color_palette" placeholder="Blush, ivory and sage" required><p class="err">Share your color palette.</p></div>
+        <div class="field" data-insp><label for="wm-link">Inspiration photos or Pinterest link</label><input id="wm-link" name="pinterest_link" type="url" inputmode="url" placeholder="Paste a Pinterest board or link">
+          <label class="wm-file"><input type="file" name="attachment" accept="image/*" multiple><span>Or upload photos</span><em data-files>JPG or PNG, up to 5 MB each</em></label>
+          <p class="err">Add a Pinterest link or upload at least one photo.</p></div>"""),
+        _step(4, 'Floral elements', 'What are you dreaming of?', 'Select the floral elements you&rsquo;re interested in. Choose as many as you like.', f"""
+        <fieldset class="field"><legend class="sr">Which floral elements are you considering?</legend><div class="wm-cards">{_opts('floral_elements', ['Bridal Bouquet', 'Centerpieces', 'Ceremony Florals', 'Floral Installations', 'Floral Bar Experience', 'Weekly / Corporate Florals'], 'checkbox')}</div><p class="err">Choose at least one.</p></fieldset>"""),
+        _step(5, 'Your investment', 'Estimated floral budget', 'Understanding your investment range allows us to design intentionally and align with your vision.', f"""
+        <fieldset class="field"><legend class="sr">Estimated floral budget</legend><div class="wm-cards wm-cards--2">{_opts('floral_budget', ['$500 to $1,000', '$1,000 to $2,500', '$2,500 to $5,000', '$5,000+'])}</div><p class="err">Choose a budget range.</p></fieldset>"""),
+        _step(6, 'One final detail', 'The feeling', 'A final note to help us understand your vision more deeply.', """
+        <div class="field"><label for="wm-feel">What feeling or experience do you want your florals to create?</label><textarea id="wm-feel" name="desired_feeling" rows="5" required></textarea><p class="err">Tell us a little about the feeling you want.</p></div>"""),
+    ]
+    return f"""<dialog class="wm" id="wm" aria-labelledby="wm-head">
+  <div class="wm__panel">
+    <div class="wm__art" aria-hidden="true">{im('bouquet-white-b', '', 'wm__img')}<p class="wm__quote">Refined, nature-inspired florals for weddings and events.</p></div>
+    <form class="wm__form" data-wm novalidate>
+      <div class="wm__top">
+        <p class="wm__brand" id="wm-head">Wedding &amp; event inquiry</p>
+        <button type="button" class="wm__x" data-wm-close aria-label="Close">&times;</button>
+        <div class="wm__bar" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"><i></i></div>
+        <p class="wm__count" aria-live="polite">Step <b data-wm-n>1</b> of 6</p>
+      </div>
+      <div class="wm__body">
+        {''.join(steps)}
+        <section class="wm__step wm__done" data-step="done" hidden>
+          <img src="assets/logo.png" width="86" height="76" alt="">
+          <h2 class="wm__title" tabindex="-1">Thank you<span data-wm-who></span></h2>
+          <p class="wm__desc">We received your inquiry. Irene will reply by email within 24 hours to set up a time to talk about your florals.</p>
+          <button type="button" class="btn" data-wm-close>Close</button>
+        </section>
+      </div>
+      <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="wm__nav">
+        <div class="notice" role="status"></div>
+        <button type="button" class="wm__back" data-wm-back hidden>Back</button>
+        <button type="submit" class="btn" data-wm-next>Next</button>
+      </div>
+    </form>
+  </div>
+</dialog>"""
+
 def tbar(title, left, right, tag='h2', cls='dsp'):
     return f'<div class="tbar"><{tag} class="{cls}">{title}</{tag}></div>'
 
@@ -649,60 +714,11 @@ reserve = f'''
 '''
 page('reserve.html', 'Reserve your spot', 'Reserve a spot in a floral workshop or private gathering with 1848 Blooms & Designs.', reserve)
 
-# ================================================================== WEDDING & EVENT INQUIRY
-def opts_choice(name, items, kind='radio', req=False, checked=None):
-    out = []
-    for i, o in enumerate(items):
-        r = ' required' if req and i == 0 else ''
-        c = ' checked' if o == checked else ''
-        out.append(f'<label><input type="{kind}" name="{name}" value="{html.escape(o)}"{r}{c}><span>{html.escape(o)}</span></label>')
-    return ''.join(out)
-
+# ================================================================== WEDDING INQUIRY (opens the pop-up)
 wedding = f"""
 {phero('', '', 'Wedding &amp; event inquiry', 'Weddings', 'Events',
-       'We&rsquo;re honored you&rsquo;re considering 1848 Blooms &amp; Designs. Share a few details below so we can understand your vision. We reply within 24 hours.', plain=True)}
-
-<section class="section">
-  <div class="wrap form-grid">
-    <form class="form" data-form="wedding" novalidate>
-      <h2 class="dsp wf-h full">Let&rsquo;s start with you</h2>
-      <div class="field"><label for="wname">Full name</label><input id="wname" name="name" autocomplete="name" required><p class="err">Enter your name.</p></div>
-      <div class="field"><label for="wemail">Email</label><input id="wemail" name="email" type="email" autocomplete="email" required><p class="err">Enter a valid email address.</p></div>
-      <div class="field"><label for="wphone">Phone</label><input id="wphone" name="phone" type="tel" autocomplete="tel" required><p class="err">Enter a phone number.</p></div>
-
-      <h2 class="dsp wf-h full">Tell us about your event</h2>
-      <fieldset class="field full"><legend>Event type</legend>
-        <div class="choice">{opts_choice('event_type', ['Wedding', 'Bridal Shower', 'Baby Shower', 'Dinner Party', 'Corporate Event', 'Other'], req=True, checked='Wedding')}</div>
-        <p class="err">Choose an event type.</p></fieldset>
-      <div class="field"><label for="wdate">Event date</label><input id="wdate" name="event_date" type="date" required><p class="err">Choose your event date.</p></div>
-      <div class="field"><label for="wvenue">Venue and city</label><input id="wvenue" name="venue" required><p class="err">Enter the venue and city.</p></div>
-
-      <h2 class="dsp wf-h full">Your vision</h2>
-      <div class="field full"><label for="wwords">Describe your event in a few words</label><input id="wwords" name="style_words" placeholder="Elegant, modern, romantic, minimal" required><p class="err">Give us a few words.</p></div>
-      <div class="field"><label for="wcolors">Color palette</label><input id="wcolors" name="color_palette" placeholder="Blush, ivory and sage" required><p class="err">Share your colors.</p></div>
-      <div class="field"><label for="winsp">Pinterest or inspiration link</label><input id="winsp" name="inspiration_link" type="url" placeholder="https://"></div>
-      <p class="wf-note full">Have photos instead? Reply to our email with them and we&rsquo;ll add them to your file.</p>
-      <fieldset class="field full"><legend>Which floral elements are you considering?</legend>
-        <div class="choice">{opts_choice('floral_elements', ['Bridal Bouquet', 'Centerpieces', 'Ceremony Florals', 'Floral Installations', 'Floral Bar Experience', 'Weekly / Corporate Florals'], kind='checkbox', req=True)}</div>
-        <p class="err">Choose at least one.</p></fieldset>
-      <fieldset class="field full"><legend>Estimated floral budget</legend>
-        <div class="choice">{opts_choice('budget', ['$500 to $1,000', '$1,000 to $2,500', '$2,500 to $5,000', '$5,000+'], req=True)}</div>
-        <p class="err">Choose a budget range.</p></fieldset>
-      <div class="field full"><label for="wfeel">What feeling or experience do you want your florals to create?</label><textarea id="wfeel" name="feeling" required></textarea><p class="err">Tell us a little about the feeling you want.</p></div>
-      <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
-      <div class="notice" role="status"></div>
-      <button class="btn" type="submit">Send my inquiry</button>
-    </form>
-    <aside class="aside">
-      {im('couple-bouquet', 'A bride and groom holding a lush garden bouquet', '', extra='style="aspect-ratio:4/5;object-position:50% 40%"')}
-      <dl>
-        <div><dt>What happens next</dt><dd>Irene reads every inquiry and replies by email within 24 hours to set up a time to talk.</dd></div>
-        <div><dt>Wedding florals</dt><dd>Start at $3,500. Events start at $750.</dd></div>
-        <div><dt>Questions</dt><dd><a class="link" href="mailto:{EMAIL}">{EMAIL}</a></dd></div>
-      </dl>
-    </aside>
-  </div>
-</section>
+       'We&rsquo;re honored you&rsquo;re considering 1848 Blooms &amp; Designs. Six short steps, about three minutes. We reply within 24 hours.', btn=None, plain=True)}
+<section class="section section--tight"><div class="wrap" style="text-align:center"><a class="btn" {WED_ATTR} data-wm-auto>Start your inquiry</a></div></section>
 """
 page('wedding.html', 'Wedding & event inquiry', 'Tell 1848 Blooms & Designs about your wedding or event: date, venue, vision, floral elements and budget.', wedding)
 

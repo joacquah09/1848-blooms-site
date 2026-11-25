@@ -12,7 +12,7 @@
 <meta property="og:image" content="assets/img/home-banner.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=20">
+<link rel="stylesheet" href="assets/site.css?v=21">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -67,11 +67,83 @@
   <div class="f-mid">
     <ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="designer.html">Meet the designer</a></li><li><a href="portfolio.html">Portfolio</a></li></ul>
     <ul><li><a href="services.html">Services</a></li><li><a href="floral-bar.html">Floral Bar</a></li><li><a href="experiences.html">Experiences</a></li><li><a href="reserve.html">Reserve your spot</a></li></ul>
-    <div class="f-btns"><a class="btn" href="reserve.html">Reserve your spot</a><a class="btn" href="wedding.html">Wedding inquiry</a></div>
+    <div class="f-btns"><a class="btn" href="reserve.html">Reserve your spot</a><a class="btn" href="wedding.html" data-wm-open>Wedding inquiry</a></div>
   </div>
   <div class="f-thumbs"><img src="assets/img/arch-willow.jpg" width="981" height="1284" alt="A wooden arch with white flowers" loading="lazy" decoding="async" ><img src="assets/img/pastel-table-a.jpg" width="1067" height="1600" alt="A pastel table with a tall arrangement" loading="lazy" decoding="async" ><img src="assets/img/bouquet-ribbon.jpg" width="1600" height="1067" alt="A pastel bouquet with a rust ribbon" loading="lazy" decoding="async" ><img src="assets/img/bridesmaids.jpg" width="1049" height="1600" alt="Bridesmaids holding bouquets" loading="lazy" decoding="async" ><img src="assets/img/ladder-daisies.jpg" width="1067" height="1600" alt="Daisies in a woven basket" loading="lazy" decoding="async" ></div>
   <div class="legal"><span>&copy; <span data-year>2026</span> 1848 Blooms &amp; Designs</span><span>Serving Delaware, Pennsylvania &amp; Beyond &middot; Now booking 2026</span></div>
 </footer>
-<script src="assets/site.js?v=3"></script>
+<dialog class="wm" id="wm" aria-labelledby="wm-head">
+  <div class="wm__panel">
+    <div class="wm__art" aria-hidden="true"><img class="wm__img" src="assets/img/bouquet-white-b.jpg" width="1132" height="1600" alt="" loading="lazy" decoding="async" ><p class="wm__quote">Refined, nature-inspired florals for weddings and events.</p></div>
+    <form class="wm__form" data-wm novalidate>
+      <div class="wm__top">
+        <p class="wm__brand" id="wm-head">Wedding &amp; event inquiry</p>
+        <button type="button" class="wm__x" data-wm-close aria-label="Close">&times;</button>
+        <div class="wm__bar" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"><i></i></div>
+        <p class="wm__count" aria-live="polite">Step <b data-wm-n>1</b> of 6</p>
+      </div>
+      <div class="wm__body">
+        <section class="wm__step" data-step="1">
+      <p class="wm__kicker">Let&rsquo;s start with you</p>
+      <h2 class="wm__title" tabindex="-1">Welcome</h2>
+      <p class="wm__desc">We&rsquo;re honored you&rsquo;re considering 1848 Blooms &amp; Designs. We design refined, nature-inspired floral experiences for weddings and events. A few details so we know how to reach you.</p>
+      <div class="wm__fields">
+        <div class="field"><label for="wm-name">Full name</label><input id="wm-name" name="name" autocomplete="name" required><p class="err">Enter your full name.</p></div>
+        <div class="field"><label for="wm-email">Email address</label><input id="wm-email" name="email" type="email" autocomplete="email" required><p class="err">Enter a valid email address.</p></div>
+        <div class="field"><label for="wm-phone">Phone number</label><input id="wm-phone" name="phone" type="tel" autocomplete="tel" required><p class="err">Enter your phone number.</p></div></div>
+    </section><section class="wm__step" data-step="2" hidden>
+      <p class="wm__kicker">Tell us about your event</p>
+      <h2 class="wm__title" tabindex="-1">Your event</h2>
+      <p class="wm__desc">This is where your vision begins to take shape.</p>
+      <div class="wm__fields">
+        <fieldset class="field"><legend>Event type</legend><div class="wm-chips"><label class=""><input type="radio" name="event_type" value="Wedding"><span>Wedding</span></label><label class=""><input type="radio" name="event_type" value="Bridal Shower"><span>Bridal Shower</span></label><label class=""><input type="radio" name="event_type" value="Baby Shower"><span>Baby Shower</span></label><label class=""><input type="radio" name="event_type" value="Dinner Party"><span>Dinner Party</span></label><label class=""><input type="radio" name="event_type" value="Corporate Event"><span>Corporate Event</span></label><label class=""><input type="radio" name="event_type" value="Other"><span>Other</span></label></div><p class="err">Choose your event type.</p></fieldset>
+        <div class="field"><label for="wm-date">Event date</label><input id="wm-date" name="event_date" type="date" required><p class="err">Choose your event date.</p></div>
+        <div class="field"><label for="wm-venue">Event location (venue and city)</label><input id="wm-venue" name="event_location" placeholder="The Barn at Spring Brook, Kennett Square" required><p class="err">Enter the venue and city.</p></div></div>
+    </section><section class="wm__step" data-step="3" hidden>
+      <p class="wm__kicker">Your vision &amp; aesthetic</p>
+      <h2 class="wm__title" tabindex="-1">Your vision</h2>
+      <p class="wm__desc">Tell us how you picture the day.</p>
+      <div class="wm__fields">
+        <div class="field"><label for="wm-words">Describe your event in a few words</label><textarea id="wm-words" name="event_description" rows="3" placeholder="Elegant, modern, romantic, minimal" required></textarea><p class="err">Give us a few words.</p></div>
+        <div class="field"><label for="wm-colors">Color palette</label><input id="wm-colors" name="color_palette" placeholder="Blush, ivory and sage" required><p class="err">Share your color palette.</p></div>
+        <div class="field" data-insp><label for="wm-link">Inspiration photos or Pinterest link</label><input id="wm-link" name="pinterest_link" type="url" inputmode="url" placeholder="Paste a Pinterest board or link">
+          <label class="wm-file"><input type="file" name="attachment" accept="image/*" multiple><span>Or upload photos</span><em data-files>JPG or PNG, up to 5 MB each</em></label>
+          <p class="err">Add a Pinterest link or upload at least one photo.</p></div></div>
+    </section><section class="wm__step" data-step="4" hidden>
+      <p class="wm__kicker">Floral elements</p>
+      <h2 class="wm__title" tabindex="-1">What are you dreaming of?</h2>
+      <p class="wm__desc">Select the floral elements you&rsquo;re interested in. Choose as many as you like.</p>
+      <div class="wm__fields">
+        <fieldset class="field"><legend class="sr">Which floral elements are you considering?</legend><div class="wm-cards"><label class=""><input type="checkbox" name="floral_elements" value="Bridal Bouquet"><span>Bridal Bouquet</span></label><label class=""><input type="checkbox" name="floral_elements" value="Centerpieces"><span>Centerpieces</span></label><label class=""><input type="checkbox" name="floral_elements" value="Ceremony Florals"><span>Ceremony Florals</span></label><label class=""><input type="checkbox" name="floral_elements" value="Floral Installations"><span>Floral Installations</span></label><label class=""><input type="checkbox" name="floral_elements" value="Floral Bar Experience"><span>Floral Bar Experience</span></label><label class=""><input type="checkbox" name="floral_elements" value="Weekly / Corporate Florals"><span>Weekly / Corporate Florals</span></label></div><p class="err">Choose at least one.</p></fieldset></div>
+    </section><section class="wm__step" data-step="5" hidden>
+      <p class="wm__kicker">Your investment</p>
+      <h2 class="wm__title" tabindex="-1">Estimated floral budget</h2>
+      <p class="wm__desc">Understanding your investment range allows us to design intentionally and align with your vision.</p>
+      <div class="wm__fields">
+        <fieldset class="field"><legend class="sr">Estimated floral budget</legend><div class="wm-cards wm-cards--2"><label class=""><input type="radio" name="floral_budget" value="$500 to $1,000"><span>$500 to $1,000</span></label><label class=""><input type="radio" name="floral_budget" value="$1,000 to $2,500"><span>$1,000 to $2,500</span></label><label class=""><input type="radio" name="floral_budget" value="$2,500 to $5,000"><span>$2,500 to $5,000</span></label><label class=""><input type="radio" name="floral_budget" value="$5,000+"><span>$5,000+</span></label></div><p class="err">Choose a budget range.</p></fieldset></div>
+    </section><section class="wm__step" data-step="6" hidden>
+      <p class="wm__kicker">One final detail</p>
+      <h2 class="wm__title" tabindex="-1">The feeling</h2>
+      <p class="wm__desc">A final note to help us understand your vision more deeply.</p>
+      <div class="wm__fields">
+        <div class="field"><label for="wm-feel">What feeling or experience do you want your florals to create?</label><textarea id="wm-feel" name="desired_feeling" rows="5" required></textarea><p class="err">Tell us a little about the feeling you want.</p></div></div>
+    </section>
+        <section class="wm__step wm__done" data-step="done" hidden>
+          <img src="assets/logo.png" width="86" height="76" alt="">
+          <h2 class="wm__title" tabindex="-1">Thank you<span data-wm-who></span></h2>
+          <p class="wm__desc">We received your inquiry. Irene will reply by email within 24 hours to set up a time to talk about your florals.</p>
+          <button type="button" class="btn" data-wm-close>Close</button>
+        </section>
+      </div>
+      <div class="hp" aria-hidden="true"><label>Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <div class="wm__nav">
+        <div class="notice" role="status"></div>
+        <button type="button" class="wm__back" data-wm-back hidden>Back</button>
+        <button type="submit" class="btn" data-wm-next>Next</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+<script src="assets/site.js?v=4"></script>
 </body>
 </html>
