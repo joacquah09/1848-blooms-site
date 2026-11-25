@@ -93,7 +93,7 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 <meta property="og:image" content="assets/img/{og}.jpg">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
-<link rel="stylesheet" href="assets/site.css?v=18">
+<link rel="stylesheet" href="assets/site.css?v=19">
 </head>
 <body>
 {header(fname)}
@@ -472,6 +472,7 @@ exp = f'''
     <div class="ws-list">
       {''.join(ws_row(w) for w in WORKSHOPS)}
     </div>
+    <p class="ws-note">All sales are final. Can&rsquo;t make it? Pass your spot to a friend. Just email us their name so we can update our list.</p>
   </div>
 </section>
 
@@ -640,7 +641,7 @@ reserve = f'''
       {im('designer-making', 'A designer arranging flowers in white bowls at a wooden table', '', extra='style="aspect-ratio:3/2;object-position:30% 50%"')}
       <dl>
         <div><dt>What happens next</dt><dd>We email you to confirm your spot and send a link to pay.</dd></div>
-        <div><dt>Cancellations</dt><dd><span class="ph">[Cancellation and rescheduling policy.]</span></dd></div>
+        <div><dt>Cancellations</dt><dd>All workshop sales are final. Can&rsquo;t make it? You&rsquo;re welcome to pass your spot to someone else. Just email us their name so we can update our list.</dd></div>
         <div><dt>Questions</dt><dd><a class="link" href="contact.html">Send us a message</a></dd></div>
       </dl>
     </aside>
