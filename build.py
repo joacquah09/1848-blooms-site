@@ -131,11 +131,12 @@ def florist():
         'description': 'Nature-inspired, garden-style wedding and event florist serving ' + TOWNS + ', plus hands-on floral workshops and the Floral Bar.',
         'email': EMAIL, 'telephone': '+1-' + PHONE_IRENE,
         'founder': {'@type': 'Person', 'name': 'Irene Acquah', 'jobTitle': 'Lead designer'},
+        'employee': [{'@type': 'Person', 'name': 'Irene Acquah', 'jobTitle': 'Lead designer'}, {'@type': 'Person', 'name': 'Jonas Acquah', 'jobTitle': 'Business manager'}],
         'areaServed': AREAS, 'hasMap': GOOGLE_PROFILE, 'sameAs': [GOOGLE_PROFILE] + SOCIAL,
         'knowsAbout': ['Wedding flowers', 'Bridal bouquets', 'Ceremony florals', 'Event florals', 'Floral installations', 'Floral workshops'],
         'contactPoint': [
             {'@type': 'ContactPoint', 'contactType': 'Wedding and event inquiries', 'name': 'Irene Acquah', 'email': EMAIL, 'telephone': '+1-' + PHONE_IRENE},
-            {'@type': 'ContactPoint', 'contactType': 'Customer service', 'name': 'Jonas Acquah', 'email': EMAIL_JONAS, 'telephone': '+1-' + PHONE_JONAS}],
+            {'@type': 'ContactPoint', 'contactType': 'Business manager', 'name': 'Jonas Acquah', 'email': EMAIL_JONAS, 'telephone': '+1-' + PHONE_JONAS}],
     }
 
 
@@ -771,7 +772,7 @@ contact = f'''
       {im('designer-stool', 'Irene Acquah, lead designer of 1848 Blooms & Designs, laughing on a stool and holding a bouquet', '', extra='style="object-position:50% 30%"')}
       <dl>
         <div><dt>Irene Acquah, lead designer</dt><dd><a class="link" href="mailto:{EMAIL}">{EMAIL}</a><br>{tel(PHONE_IRENE)}</dd></div>
-        <div><dt>Jonas Acquah</dt><dd><a class="link" href="mailto:{EMAIL_JONAS}">{EMAIL_JONAS}</a><br>{tel(PHONE_JONAS)}</dd></div>
+        <div><dt>Jonas Acquah, business manager</dt><dd><a class="link" href="mailto:{EMAIL_JONAS}">{EMAIL_JONAS}</a><br>{tel(PHONE_JONAS)}</dd></div>
         <div><dt>Service area</dt><dd>{AREA}, including Greenville, Philadelphia and New Hope</dd></div>
         <div><dt>Follow along</dt><dd><a class="link" href="https://www.instagram.com/1848BloomsandDesigns" target="_blank" rel="noopener">Instagram</a>, <a class="link" href="https://www.facebook.com/1848BloomsandDesigns" target="_blank" rel="noopener">Facebook</a>, <a class="link" href="https://www.tiktok.com/@1848bloomsanddesigns" target="_blank" rel="noopener">TikTok</a>, <a class="link" href="https://www.linkedin.com/company/1848-blooms-and-designs/" target="_blank" rel="noopener">LinkedIn</a></dd></div>
       </dl>
