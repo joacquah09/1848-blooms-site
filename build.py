@@ -314,8 +314,7 @@ home = f'''
     <span class="eyebrow">{AREA} &middot; Now booking 2027</span>
     <h1>Nature inspired garden style florals</h1>
     <div class="btn-row">
-      <a class="btn btn--arrow" href="services.html#weddings">Weddings</a>
-      <a class="btn btn--arrow" href="services.html#events">Events</a>
+      <a class="btn btn--arrow" href="services.html">Weddings + events</a>
       <a class="btn btn--arrow" href="floral-bar.html">Floral Bar</a>
       <a class="btn btn--arrow" href="experiences.html">Experiences</a>
     </div>
@@ -353,7 +352,7 @@ home = f'''
   <div class="feature__card">
     <h2 class="dsp">Weddings + events</h2>
     <p>We take on a limited number of weddings and events each season so every client gets our full creative focus. Our full-service design covers every touchpoint, from personal flowers to installations, and we deliver and set up everything.</p>
-    <div class="btn-row btn-row--center" style="margin-top:0"><a class="btn" href="services.html#weddings">Wedding florals</a><a class="btn" href="services.html#events">Event florals</a></div>
+    <a class="btn" href="services.html">View the details</a>
   </div>
 </section>
 
