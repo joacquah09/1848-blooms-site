@@ -67,9 +67,9 @@ def ratio(n):
 
 
 
-NAV = [('index.html','Home'),('wedding-florist.html','Weddings'),('about.html','About'),('services.html','Services'),('floral-bar.html','Floral Bar'),
+NAV = [('index.html','Home'),('about.html','About'),('services.html','Services'),('floral-bar.html','Floral Bar'),
        ('portfolio.html','Portfolio'),('experiences.html','Experiences'),('contact.html','Contact')]
-MNAV = [('index.html','Home'),('wedding-florist.html','Weddings'),('about.html','About'),('designer.html','Meet the designer'),('services.html','Services'),('floral-bar.html','Floral Bar'),('portfolio.html','Portfolio'),('experiences.html','Experiences'),('reserve.html','Reserve your spot'),('contact.html','Contact')]
+MNAV = [('index.html','Home'),('about.html','About'),('designer.html','Meet the designer'),('services.html','Services'),('floral-bar.html','Floral Bar'),('portfolio.html','Portfolio'),('experiences.html','Experiences'),('reserve.html','Reserve your spot'),('contact.html','Contact')]
 # small copy of the logo for the header and footer (the full file is 700px wide but shows at 86px)
 if not os.path.exists(f'{OUT}/assets/logo-sm.png'):
     with Image.open(f'{OUT}/assets/logo.png') as _l:
@@ -105,7 +105,7 @@ def footer():
     return f'''<footer class="site-footer">
   <div class="f-top">{LOGO}<div class="hd__right">{SOC}<a class="contact-link" href="contact.html">Contact</a></div></div>
   <div class="f-mid">
-    <ul><li><a href="index.html">Home</a></li><li><a href="wedding-florist.html">Weddings</a></li><li><a href="about.html">About</a></li><li><a href="designer.html">Meet the designer</a></li><li><a href="portfolio.html">Portfolio</a></li></ul>
+    <ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="designer.html">Meet the designer</a></li><li><a href="portfolio.html">Portfolio</a></li></ul>
     <ul><li><a href="services.html">Services</a></li><li><a href="floral-bar.html">Floral Bar</a></li><li><a href="experiences.html">Experiences</a></li><li><a href="reserve.html">Reserve your spot</a></li></ul>
     <div class="f-btns"><a class="btn" href="reserve.html">Reserve your spot</a><a class="btn" {WED_ATTR}>Wedding inquiry</a>
       <p class="f-note"><a href="mailto:{EMAIL}">{EMAIL}</a> &middot; <a href="tel:+1{PHONE_IRENE.replace("-", "")}">{PHONE_IRENE}</a></p></div>
@@ -314,7 +314,7 @@ home = f'''
     <span class="eyebrow">{AREA} &middot; Now booking 2027</span>
     <h1>Nature inspired garden style florals</h1>
     <div class="btn-row">
-      <a class="btn btn--arrow" href="wedding-florist.html">Weddings</a>
+      <a class="btn btn--arrow" href="services.html#weddings">Weddings</a>
       <a class="btn btn--arrow" href="services.html#events">Events</a>
       <a class="btn btn--arrow" href="floral-bar.html">Floral Bar</a>
       <a class="btn btn--arrow" href="experiences.html">Experiences</a>
@@ -353,7 +353,7 @@ home = f'''
   <div class="feature__card">
     <h2 class="dsp">Weddings + events</h2>
     <p>We take on a limited number of weddings and events each season so every client gets our full creative focus. Our full-service design covers every touchpoint, from personal flowers to installations, and we deliver and set up everything.</p>
-    <div class="btn-row btn-row--center" style="margin-top:0"><a class="btn" href="wedding-florist.html">Wedding florals</a><a class="btn" href="services.html#events">Event florals</a></div>
+    <div class="btn-row btn-row--center" style="margin-top:0"><a class="btn" href="services.html#weddings">Wedding florals</a><a class="btn" href="services.html#events">Event florals</a></div>
   </div>
 </section>
 
@@ -473,7 +473,8 @@ services = f'''
     </ul>
     <p><em>Custom wedding florals tailored to your celebration.</em></p>
     <p class="small">Wedding florals start at $2,500.00</p>
-    <div class="btn-row"><a class="btn" {WED_ATTR}>Inquire about your wedding</a><a class="btn btn--ghost" href="wedding-florist.html">More about weddings</a></div>
+    <p class="small">Wedding flowers for couples in Delaware, Greenville, Philadelphia, New Hope and the surrounding areas.</p>
+    <div class="btn-row"><a class="btn" {WED_ATTR}>Inquire about your wedding</a></div>
   </div></div>
 </section>
 
@@ -519,7 +520,17 @@ services = f'''
 
 {closer('Ready to talk florals?', 'Inquire now', 'contact.html#general', 'band-petal')}
 '''
-page('services.html', 'Wedding & Event Florals', 'Wedding and event florals in Delaware, Greenville, Philadelphia and New Hope: bouquets, ceremony and reception flowers, centerpieces and installations.', services, og='centerpiece-wide-a')
+page('services.html', 'Wedding & Event Florals', 'Wedding and event florals in Delaware, Greenville, Philadelphia and New Hope: bouquets, ceremony and reception flowers, centerpieces and installations.', services, og='centerpiece-wide-a', schema=[{
+         '@context': 'https://schema.org', '@type': 'Service', 'serviceType': 'Wedding florist',
+         'name': 'Wedding florals', 'url': DOMAIN + 'services.html#weddings',
+         'description': 'Personal flowers, ceremony flowers, reception flowers and installations for weddings in ' + TOWNS + '.',
+         'provider': {'@type': 'Florist', '@id': DOMAIN + '#business', 'name': SITE, 'url': DOMAIN}, 'areaServed': AREAS,
+         'offers': {'@type': 'Offer', 'priceSpecification': {'@type': 'PriceSpecification', 'minPrice': 2500, 'priceCurrency': 'USD'}}}, {
+         '@context': 'https://schema.org', '@type': 'Service', 'serviceType': 'Event florist',
+         'name': 'Event florals', 'url': DOMAIN + 'services.html#events',
+         'provider': {'@type': 'Florist', '@id': DOMAIN + '#business'}, 'areaServed': AREAS,
+         'offers': {'@type': 'Offer', 'priceSpecification': {'@type': 'PriceSpecification', 'minPrice': 750, 'priceCurrency': 'USD'}}}],
+     full_title='Wedding & Event Florist in Delaware, Philadelphia & New Hope | 1848 Blooms')
 
 # ================================================================== FLORAL BAR
 bar = f'''
@@ -751,7 +762,7 @@ contact = f'''
   <div class="phero__mid"><span class="eyebrow">Inquiries &middot; Now booking 2027</span><div class="tbar"><h1 class="dsp">Get in touch</h1></div></div>
   <div class="phero__foot">
     <p>We are looking forward to hearing from you!</p>
-    <p>For weddings, please visit our <a class="link" href="wedding-florist.html">wedding page here</a> and complete our <a class="link" {WED_ATTR}>wedding inquiry form here</a>.<br>For general inquiries, send us a <a class="link" href="#general">message here</a>.</p>
+    <p>For weddings, please visit our <a class="link" href="services.html#weddings">wedding page here</a> and complete our <a class="link" {WED_ATTR}>wedding inquiry form here</a>.<br>For general inquiries, send us a <a class="link" href="#general">message here</a>.</p>
   </div>
 </section>
 
@@ -836,81 +847,13 @@ reserve = f'''
 '''
 page('reserve.html', 'Reserve a Workshop Spot', 'Reserve a spot in a floral workshop, a workshop pass or a private gathering with 1848 Blooms & Designs.', reserve)
 
-# ================================================================== WEDDING FLORIST (landing page for "wedding florist" searches)
-WG = [('bouquet-bright', 'A bright bridal bouquet of yellow, coral and blush flowers held against a white dress'),
-      ('arch-willow', 'A wooden ceremony pergola draped with white fabric and flowers beneath a willow tree'),
-      ('bridesmaids', 'Bridesmaids in lavender dresses holding white bouquets on a brick patio'),
-      ('reception-lights', 'A wedding reception table beneath string lights with a pampas and rose centerpiece')]
-wstrip = ''.join(f'<figure style="--r:{ratio(n)}">{im(n, a, sizes="(max-width: 900px) 50vw, 25vw")}</figure>' for n, a in WG)
-weddings = f'''
-{phero('couple-window', 'A bride and groom sharing a quiet moment at a window, her bouquet in hand', 'Wedding florist', 'Delaware<br>and Greenville', 'Philadelphia<br>and New Hope',
-       'Nature-inspired, garden-style wedding flowers for couples marrying in Delaware, Greenville, Philadelphia, New Hope and the surrounding areas.',
-       f'<a class="btn" {WED_ATTR}>Start your wedding inquiry</a>')}
-
-<section class="panels">
-  <div class="panel panel--img" style="min-height:680px">{im('kiss-arch', 'A couple kissing under a wooden wedding arch draped in white fabric and white flowers')}</div>
-  <div class="panel panel--petal panel--center"><div>
-    <h2 class="dsp">Wedding flowers, start to finish</h2>
-    <p>Your florals should feel like you and fit the occasion. We understand and design the whole story so the ceremony, the reception and the people in them all feel connected. We take on a limited number of weddings each season so every couple gets our full creative focus.</p>
-    <ul class="tick">
-      <li><strong>Personal flowers</strong><span>Bouquets, boutonnieres, corsages and flowers for your wedding party.</span></li>
-      <li><strong>Ceremony flowers</strong><span>Floral arches, aisle arrangements and statement pieces for your ceremony.</span></li>
-      <li><strong>Reception flowers</strong><span>Centerpieces, installations and floral details that bring your reception space together.</span></li>
-      <li><strong>A Floral Bar</strong><span>Guests build their own bouquet as a favor. <a class="link" href="floral-bar.html">How it works</a></span></li>
-    </ul>
-    <p><em>Custom wedding florals tailored to your celebration.</em></p>
-    <p class="small">Wedding florals start at $2,500.00</p>
-    <div class="btn-row"><a class="btn" {WED_ATTR}>Inquire about your wedding</a></div>
-  </div></div>
-</section>
-
-<section class="section band-paper2">
-  <div class="wrap">
-    {tbar('Recent weddings', 'Bouquets', 'Ceremonies')}
-    <div class="strip" style="margin-top:clamp(2rem,4vw,3.5rem)">{wstrip}</div>
-    <div class="btn-row btn-row--center" style="margin-top:clamp(2rem,4vw,3rem)"><a class="btn" href="portfolio.html#weddings">See the wedding portfolio</a></div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="wrap split split--top split--57">
-    <div class="copy">
-      <h2 class="dsp" style="font-size:clamp(2rem,.9rem + 3.6vw,4.2rem)">Where we design weddings</h2>
-      <p>We design wedding flowers across Delaware, including Greenville, and in Pennsylvania from Philadelphia to New Hope, Lumberville, Doylestown and Kennett Square. Planning something farther away? We&rsquo;d love to hear about it.</p>
-    </div>
-    <div class="faq">
-      <details><summary>How far in advance should we book our wedding florist?</summary><div><p>We recommend reaching out 6&ndash;12 months ahead, especially for popular dates. Have a date coming up sooner? Reach out and we&rsquo;ll see what we can do.</p></div></details>
-      <details><summary>How much do wedding flowers cost?</summary><div><p>Wedding florals start at $2,500. Pricing depends on the flowers, arrangements and overall design, so share a few details and we&rsquo;ll put together a proposal based on what you need.</p></div></details>
-      <details><summary>Can we choose our flowers and colors?</summary><div><p>Absolutely. We&rsquo;ll work with your preferred colors and flowers, while recommending seasonal blooms and combinations that work beautifully together. Specific varieties depend on availability.</p></div></details>
-      <details><summary>Do you deliver and set up at our venue?</summary><div><p>Delivery and on-site setup can be included depending on your wedding and floral needs. We&rsquo;ll confirm the arrangements, location and any associated fees in your proposal.</p></div></details>
-      <details><summary>What happens after we inquire?</summary><div><p>Irene replies by email within 24 hours to set up a time to talk about your florals. Once the scope and pricing are agreed, we&rsquo;ll explain the booking and payment process.</p></div></details>
-    </div>
-  </div>
-</section>
-
-<section class="section band-petal"><div class="wrap closer">
-  <h2 class="dsp">Tell us about your wedding.</h2>
-  <p style="max-width:40ch;margin:1.2rem auto 0">Six short steps, about three minutes. Irene replies within 24 hours.</p>
-  <div class="btn-row btn-row--center"><a class="btn btn--arrow" {WED_ATTR}>Start your wedding inquiry</a></div>
-  <p class="small" style="margin-top:1.4rem">Or email <a class="link" href="mailto:{EMAIL}">{EMAIL}</a> &middot; call or text {tel(PHONE_IRENE)}</p>
-</div></section>
-'''
-page('wedding-florist.html', 'Wedding Florist in Delaware, Philadelphia & New Hope',
-     'Garden-style wedding flowers for couples in Delaware, Greenville, Philadelphia and New Hope: bouquets, ceremony arches, centerpieces and installations.',
-     weddings, og='kiss-arch', full_title='Wedding Florist in Delaware, Philadelphia & New Hope | 1848 Blooms', schema=[{
-         '@context': 'https://schema.org', '@type': 'Service', 'serviceType': 'Wedding florist',
-         'name': 'Wedding florals', 'url': DOMAIN + 'wedding-florist.html',
-         'description': 'Personal flowers, ceremony flowers, reception flowers and installations for weddings, delivered and set up at your venue.',
-         'provider': {'@type': 'Florist', '@id': DOMAIN + '#business', 'name': SITE, 'url': DOMAIN}, 'areaServed': AREAS,
-         'offers': {'@type': 'Offer', 'priceSpecification': {'@type': 'PriceSpecification', 'minPrice': 2500, 'priceCurrency': 'USD'}}}])
-
 # ================================================================== WEDDING INQUIRY (opens the pop-up)
 wedding = f"""
 {phero('', '', 'Wedding &amp; event inquiry', 'Weddings', 'Events',
        'We&rsquo;re honored you&rsquo;re considering 1848 Blooms &amp; Designs. Six short steps, about three minutes. We reply within 24 hours.', btn=None, plain=True)}
 <section class="section section--tight"><div class="wrap" style="text-align:center"><a class="btn" {WED_ATTR} data-wm-auto>Start your inquiry</a></div></section>
 """
-page('wedding.html', 'Wedding & event inquiry', 'Tell 1848 Blooms & Designs about your wedding or event: date, venue, vision, floral elements and budget.', wedding)
+page('wedding.html', 'Wedding & Event Inquiry', 'Tell 1848 Blooms & Designs about your wedding or event: date, venue, vision, floral elements and budget.', wedding)
 
 # ================================================================== THANK YOU
 thanks = f'''
@@ -947,9 +890,9 @@ nf = '''
 <section class="phero phero--plain">
   <div class="phero__mid"><span class="eyebrow">Page not found</span><div class="tbar"><h1 class="dsp">This page has moved</h1></div></div>
   <div class="phero__foot"><p>The page you were looking for is not here any more. Try one of these instead.</p>
-  <div class="btn-row"><a class="btn" href="wedding-florist.html">Weddings</a><a class="btn" href="services.html">Weddings + events</a><a class="btn btn--ghost" href="contact.html">Contact</a></div></div>
+  <div class="btn-row"><a class="btn" href="services.html#weddings">Weddings</a><a class="btn" href="services.html#events">Events</a><a class="btn btn--ghost" href="contact.html">Contact</a></div></div>
 </section>
-<script>(function(){var p=location.pathname.toLowerCase(),m=[['wedding','wedding-florist.html'],['contact','contact.html'],['about','about.html'],['portfolio','portfolio.html'],['gallery','portfolio.html'],['workshop','experiences.html'],['class','experiences.html'],['floral-bar','floral-bar.html'],['event','services.html'],['service','services.html']];
+<script>(function(){var p=location.pathname.toLowerCase(),m=[['wedding','services.html#weddings'],['contact','contact.html'],['about','about.html'],['portfolio','portfolio.html'],['gallery','portfolio.html'],['workshop','experiences.html'],['class','experiences.html'],['floral-bar','floral-bar.html'],['event','services.html'],['service','services.html']];
 for(var i=0;i<m.length;i++)if(p.indexOf(m[i][0])>-1){location.replace('/'+m[i][1]);return;}})();</script>
 '''
 page('404.html', 'Page not found', 'This page has moved. Find wedding and event florals by 1848 Blooms & Designs.', nf, noindex=True)
@@ -963,7 +906,7 @@ for _f in [f for f, _ in PAGES]:
 open(f'{OUT}/404.html', 'w').write(_n)
 
 # ================================================================== SITEMAP + ROBOTS
-PRI = {'index.html': '1.0', 'wedding-florist.html': '0.9', 'services.html': '0.9', 'contact.html': '0.8', 'wedding.html': '0.8', 'portfolio.html': '0.7'}
+PRI = {'index.html': '1.0', 'services.html': '0.9', 'contact.html': '0.8', 'wedding.html': '0.8', 'portfolio.html': '0.7'}
 urls = ''.join(f'  <url><loc>{DOMAIN if f == "index.html" else DOMAIN + f}</loc><priority>{PRI.get(f, "0.6")}</priority></url>\n'
                for f, ni in PAGES if not ni)
 open(f'{OUT}/sitemap.xml', 'w').write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')

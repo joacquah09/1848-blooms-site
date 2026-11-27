@@ -19,5 +19,5 @@ Every hour, `.github/workflows/stripe-seats.yml` runs `scripts/stripe_sync.py`, 
 ## SEO
 
 - Business details used by search engines (phones, emails, Google Business Profile link, social links, target towns) live at the top of `build.py`. Google structured data (Florist, Service, Breadcrumb JSON-LD), canonical links and Open Graph tags are generated from them.
-- `wedding-florist.html` is the wedding landing page for "wedding florist" searches in Delaware, Greenville, Philadelphia and New Hope. `wedding.html` stays the inquiry form page.
+- The wedding section of `services.html` (linked as the wedding page) and `wedding.html` (the inquiry form) carry the wedding search terms for Delaware, Greenville, Philadelphia and New Hope.
 - `build.py` also writes `sitemap.xml`, `robots.txt` and `404.html` (which forwards old Shopify links like `/pages/contact` to the matching page), plus 800px copies of photos in `assets/img/sm/` for phones. These copies are made once and committed; delete one to regenerate it.
