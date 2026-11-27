@@ -15,3 +15,9 @@ Every hour, `.github/workflows/stripe-seats.yml` runs `scripts/stripe_sync.py`, 
 - Change a workshop's capacity: in Stripe, edit the Payment Link and change "Limit the number of payments". The site follows within the hour.
 - Needs the repository secret `STRIPE_READ_KEY`: a Stripe restricted key with **Payment Links: Read** only.
 - Run it now: GitHub > Actions > "Update workshop seats from Stripe" > Run workflow.
+
+## SEO
+
+- Business details used by search engines (phones, emails, Google Business Profile link, social links, target towns) live at the top of `build.py`. Google structured data (Florist, Service, Breadcrumb JSON-LD), canonical links and Open Graph tags are generated from them.
+- `wedding-florist.html` is the wedding landing page for "wedding florist" searches in Delaware, Greenville, Philadelphia and New Hope. `wedding.html` stays the inquiry form page.
+- `build.py` also writes `sitemap.xml`, `robots.txt` and `404.html` (which forwards old Shopify links like `/pages/contact` to the matching page), plus 800px copies of photos in `assets/img/sm/` for phones. These copies are made once and committed; delete one to regenerate it.

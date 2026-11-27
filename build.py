@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Generates the v2 static pages for 1848 Blooms & Designs into /home/claude/v3/site."""
-import os, html
+"""Generates the static pages for 1848 Blooms & Designs, plus sitemap.xml, robots.txt and 404.html.
+Run: python3 build.py (needs Pillow)."""
+import os, html, json
 from PIL import Image
 
 OUT = os.path.dirname(os.path.abspath(__file__))
@@ -11,6 +12,22 @@ EMAIL = 'ireneacquah@1848bloomsanddesigns.com'
 AREA = 'Delaware, Pennsylvania &amp; Beyond'
 _d = {}
 
+# ---------- business details for search engines (Google structured data, canonical links, sitemap) ----------
+DOMAIN = 'https://1848bloomsanddesigns.com/'
+EMAIL_JONAS = 'jonasacquah@1848bloomsanddesigns.com'
+PHONE_IRENE = '302-883-9683'
+PHONE_JONAS = '302-442-0850'
+GOOGLE_PROFILE = 'https://www.google.com/maps?cid=16409749098243940665'
+SOCIAL = ['https://www.instagram.com/1848BloomsandDesigns', 'https://www.facebook.com/1848BloomsandDesigns',
+          'https://www.tiktok.com/@1848bloomsanddesigns', 'https://www.linkedin.com/company/1848-blooms-and-designs/']
+# The places we most want to be found for. Used in page titles, descriptions, copy and structured data.
+TOWNS = 'Delaware, Greenville, Philadelphia and New Hope'
+PAGES = []   # (filename, noindex) collected for sitemap.xml
+
+
+def tel(n):
+    return f'<a class="link" href="tel:+1{n.replace("-", "")}">{n}</a>'
+
 
 def dims(n):
     if n not in _d:
@@ -19,11 +36,29 @@ def dims(n):
     return _d[n]
 
 
-def im(n, alt, cls='', eager=False, extra=''):
+SM = 800  # width of the smaller copy of each photo served to phones and small slots
+
+
+def small(n):
+    """Make assets/img/sm/<n>.jpg (800px wide) once, for srcset. Returns its width, or None if not needed."""
+    w, h = dims(n)
+    if w <= SM * 1.2:
+        return None
+    dst = f'{IMG}/sm/{n}.jpg'
+    if not os.path.exists(dst):   # made once and committed, so the seat sync never rewrites them
+        os.makedirs(f'{IMG}/sm', exist_ok=True)
+        with Image.open(f'{IMG}/{n}.jpg') as i:
+            i.convert('RGB').resize((SM, round(h * SM / w)), Image.LANCZOS).save(dst, 'JPEG', quality=80, optimize=True, progressive=True)
+    return SM
+
+
+def im(n, alt, cls='', eager=False, extra='', sizes='(max-width: 900px) 100vw, 50vw'):
     w, h = dims(n)
     load = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
     c = f' class="{cls}"' if cls else ''
-    return f'<img{c} src="assets/img/{n}.jpg" width="{w}" height="{h}" alt="{html.escape(alt)}" {load} {extra}>'
+    sw = small(n)
+    ss = f' srcset="assets/img/sm/{n}.jpg {sw}w, assets/img/{n}.jpg {w}w" sizes="{sizes}"' if sw else ''
+    return f'<img{c} src="assets/img/{n}.jpg"{ss} width="{w}" height="{h}" alt="{html.escape(alt)}" {load} {extra}>'
 
 
 def ratio(n):
@@ -32,10 +67,14 @@ def ratio(n):
 
 
 
-NAV = [('index.html','Home'),('about.html','About'),('services.html','Services'),('floral-bar.html','Floral Bar'),
+NAV = [('index.html','Home'),('wedding-florist.html','Weddings'),('about.html','About'),('services.html','Services'),('floral-bar.html','Floral Bar'),
        ('portfolio.html','Portfolio'),('experiences.html','Experiences'),('contact.html','Contact')]
-MNAV = [('index.html','Home'),('about.html','About'),('designer.html','Meet the designer'),('services.html','Services'),('floral-bar.html','Floral Bar'),('portfolio.html','Portfolio'),('experiences.html','Experiences'),('reserve.html','Reserve your spot'),('contact.html','Contact')]
-LOGO = '<a class="brand" href="index.html" aria-label="1848 Blooms &amp; Designs, home"><img src="assets/logo.png" width="86" height="76" alt="1848 Blooms &amp; Designs"></a>'
+MNAV = [('index.html','Home'),('wedding-florist.html','Weddings'),('about.html','About'),('designer.html','Meet the designer'),('services.html','Services'),('floral-bar.html','Floral Bar'),('portfolio.html','Portfolio'),('experiences.html','Experiences'),('reserve.html','Reserve your spot'),('contact.html','Contact')]
+# small copy of the logo for the header and footer (the full file is 700px wide but shows at 86px)
+if not os.path.exists(f'{OUT}/assets/logo-sm.png'):
+    with Image.open(f'{OUT}/assets/logo.png') as _l:
+        _l.resize((172, 153), Image.LANCZOS).save(f'{OUT}/assets/logo-sm.png', optimize=True)
+LOGO = '<a class="brand" href="index.html" aria-label="1848 Blooms &amp; Designs, home"><img src="assets/logo-sm.png" width="86" height="76" alt="1848 Blooms &amp; Designs"></a>'
 SOC = ('<span class="social">'
               '<a href="https://www.instagram.com/1848BloomsandDesigns" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3.500" y="3.500" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.200" cy="6.800" r=".6" fill="currentColor"/></svg></a>'
        '<a href="https://www.facebook.com/1848BloomsandDesigns" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.500 21v-7.500h2.500l.4-3h-2.900V8.600c0-.9.3-1.500 1.500-1.500h1.500V4.400c-.3 0-1.200-.1-2.200-.1-2.200 0-3.700 1.300-3.700 3.800v2.400H7.800v3h2.800V21h2.900z"/></svg></a>'
@@ -62,22 +101,70 @@ def header(cur):
 
 
 def footer():
-    thumbs = ''.join(im(n, a) for n, a in [('arch-willow','A wooden arch with white flowers'),('pastel-table-a','A pastel table with a tall arrangement'),('bouquet-ribbon','A pastel bouquet with a rust ribbon'),('bridesmaids','Bridesmaids holding bouquets'),('ladder-daisies','Daisies in a woven basket')])
+    thumbs = ''.join(im(n, a, sizes='(max-width: 560px) 33vw, 20vw') for n, a in [('arch-willow','A wooden wedding arch with white flowers'),('pastel-table-a','A pastel event table with a tall floral arrangement'),('bouquet-ribbon','A pastel bridal bouquet with a rust ribbon'),('bridesmaids','Bridesmaids holding white bouquets'),('ladder-daisies','Daisies in a woven basket')])
     return f'''<footer class="site-footer">
   <div class="f-top">{LOGO}<div class="hd__right">{SOC}<a class="contact-link" href="contact.html">Contact</a></div></div>
   <div class="f-mid">
-    <ul><li><a href="index.html">Home</a></li><li><a href="about.html">About</a></li><li><a href="designer.html">Meet the designer</a></li><li><a href="portfolio.html">Portfolio</a></li></ul>
+    <ul><li><a href="index.html">Home</a></li><li><a href="wedding-florist.html">Weddings</a></li><li><a href="about.html">About</a></li><li><a href="designer.html">Meet the designer</a></li><li><a href="portfolio.html">Portfolio</a></li></ul>
     <ul><li><a href="services.html">Services</a></li><li><a href="floral-bar.html">Floral Bar</a></li><li><a href="experiences.html">Experiences</a></li><li><a href="reserve.html">Reserve your spot</a></li></ul>
-    <div class="f-btns"><a class="btn" href="reserve.html">Reserve your spot</a><a class="btn" {WED_ATTR}>Wedding inquiry</a></div>
+    <div class="f-btns"><a class="btn" href="reserve.html">Reserve your spot</a><a class="btn" {WED_ATTR}>Wedding inquiry</a>
+      <p class="f-note"><a href="mailto:{EMAIL}">{EMAIL}</a> &middot; <a href="tel:+1{PHONE_IRENE.replace("-", "")}">{PHONE_IRENE}</a></p></div>
   </div>
   <div class="f-thumbs">{thumbs}</div>
   <div class="legal"><span>&copy; <span data-year>2026</span> 1848 Blooms &amp; Designs</span><span>Serving {AREA} &middot; Now booking 2027</span></div>
 </footer>'''
 
 
-def page(fname, title, desc, body, noindex=False, og='home-banner'):
+DE = {'@type': 'State', 'name': 'Delaware'}
+PA = {'@type': 'State', 'name': 'Pennsylvania'}
+AREAS = [DE, {'@type': 'City', 'name': 'Greenville', 'containedInPlace': DE},
+         {'@type': 'City', 'name': 'Philadelphia', 'containedInPlace': PA},
+         {'@type': 'City', 'name': 'New Hope', 'containedInPlace': PA}, PA]
+
+
+def florist():
+    """schema.org Florist for Google. No street address until there is a public studio address."""
+    return {
+        '@context': 'https://schema.org', '@type': 'Florist', '@id': DOMAIN + '#business',
+        'name': SITE, 'legalName': '1848 Blooms and Designs LLC', 'url': DOMAIN, 'logo': DOMAIN + 'assets/logo.png',
+        'image': [DOMAIN + f'assets/img/{n}.jpg' for n in ('home-banner', 'kiss-arch', 'bouquet-bright')],
+        'description': 'Nature-inspired, garden-style wedding and event florist serving ' + TOWNS + ', plus hands-on floral workshops and the Floral Bar.',
+        'email': EMAIL, 'telephone': '+1-' + PHONE_IRENE,
+        'founder': {'@type': 'Person', 'name': 'Irene Acquah', 'jobTitle': 'Lead designer'},
+        'areaServed': AREAS, 'hasMap': GOOGLE_PROFILE, 'sameAs': [GOOGLE_PROFILE] + SOCIAL,
+        'knowsAbout': ['Wedding flowers', 'Bridal bouquets', 'Ceremony florals', 'Event florals', 'Floral installations', 'Floral workshops'],
+        'contactPoint': [
+            {'@type': 'ContactPoint', 'contactType': 'Wedding and event inquiries', 'name': 'Irene Acquah', 'email': EMAIL, 'telephone': '+1-' + PHONE_IRENE},
+            {'@type': 'ContactPoint', 'contactType': 'Customer service', 'name': 'Jonas Acquah', 'email': EMAIL_JONAS, 'telephone': '+1-' + PHONE_JONAS}],
+    }
+
+
+def ld(*objs):
+    return ''.join('<script type="application/ld+json">' + json.dumps(o, ensure_ascii=False) + '</script>\n' for o in objs)
+
+
+def _attr(tag, name):
+    k = f' {name}="'
+    return tag.split(k, 1)[1].split('"', 1)[0] if k in tag else ''
+
+
+def page(fname, title, desc, body, noindex=False, og='home-banner', schema=(), full_title=None):
     robots = '<meta name="robots" content="noindex">' if noindex else ''
-    t = SITE if fname == 'index.html' else f'{title} | {SITE}'
+    t = full_title or (SITE if fname == 'index.html' else f'{title} | {SITE}')
+    url = DOMAIN if fname == 'index.html' else DOMAIN + fname
+    canon = '' if noindex else f'<link rel="canonical" href="{url}">'
+    ow, oh = dims(og)
+    PAGES.append((fname, noindex))
+    crumbs = [] if fname == 'index.html' or noindex else [{'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
+        {'@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': DOMAIN},
+        {'@type': 'ListItem', 'position': 2, 'name': title, 'item': url}]}]
+    data = '' if noindex else ld(*schema, *crumbs)
+    pre = ''
+    hero = body.find('fetchpriority="high"')
+    if hero != -1:  # let the browser start fetching the hero photo before the stylesheet finishes
+        tag = body[body.rfind('<img', 0, hero):hero]
+        ss = f' imagesrcset="{_attr(tag, "srcset")}" imagesizes="{_attr(tag, "sizes")}"' if ' srcset="' in tag else ''
+        pre = f'<link rel="preload" as="image" href="{_attr(tag, "src")}"{ss} fetchpriority="high">'
     open(f'{OUT}/{fname}', 'w').write(f'''<!doctype html>
 <html lang="en">
 <head>
@@ -86,14 +173,23 @@ def page(fname, title, desc, body, noindex=False, og='home-banner'):
 <title>{html.escape(t)}</title>
 <meta name="description" content="{html.escape(desc)}">
 {robots}
+{canon}
+<meta property="og:site_name" content="{html.escape(SITE)}">
+<meta property="og:locale" content="en_US">
 <meta property="og:title" content="{html.escape(t)}">
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:type" content="website">
-<meta property="og:image" content="assets/img/{og}.jpg">
+<meta property="og:url" content="{url}">
+<meta property="og:image" content="{DOMAIN}assets/img/{og}.jpg">
+<meta property="og:image:width" content="{ow}">
+<meta property="og:image:height" content="{oh}">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#C5A193">
 <link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+{pre}
 <link rel="stylesheet" href="assets/site.css?v=21">
-</head>
+{data}</head>
 <body>
 {header(fname)}
 <main id="main">
@@ -178,7 +274,7 @@ def tbar(title, left, right, tag='h2', cls='dsp'):
 
 def phero(img, alt, title, left, right, lede, btn=None, plain=False):
     b = f'<div class="btn-row">{btn}</div>' if btn else ''
-    bg = '' if plain else im(img, alt, 'phero__img', eager=True)
+    bg = '' if plain else im(img, alt, 'phero__img', eager=True, sizes='100vw')
     cls = 'phero phero--plain' if plain else 'phero'
     eb = f'<span class="eyebrow">{left.replace("<br>", " ")} &middot; {right.replace("<br>", " ")}</span>'
     return f'''<section class="{cls}">
@@ -197,17 +293,29 @@ def closer(title='Let\u2019s design something unforgettable.', btn='Inquire now'
 
 # ================================================================== HOME
 rail_imgs = ['table-window','bridesmaids','bouquet-bright','couple-window','pastel-table-a','arch-pampas','bouquet-chair','installation-hanging','tablescape-citrus','bouquet-ribbon']
-rail_alt = {n:a for n,c,a in []}
-RAIL = ''.join(f'<figure style="--ar:{round(dims(n)[0]/dims(n)[1],3)}">{im(n, n.replace("-"," ").capitalize()+" by 1848 Blooms & Designs")}</figure>' for n in rail_imgs)
+rail_alt = {
+    'table-window': 'A bright table by a window with a centerpiece of yellow and orange flowers',
+    'bridesmaids': 'Bridesmaids in lavender dresses holding white bouquets on a brick patio',
+    'bouquet-bright': 'A bright bridal bouquet of yellow, coral and blush flowers held against a white dress',
+    'couple-window': 'A bride and groom sharing a quiet moment at a window, her bouquet in hand',
+    'pastel-table-a': 'A pink and cream event table with a tall pastel arrangement and a taper candle',
+    'arch-pampas': 'A wooden triangle ceremony arch dressed with pampas grass and dried flowers',
+    'bouquet-chair': 'A pink and blue bouquet with a pale blue ribbon resting on a wooden chair',
+    'installation-hanging': 'A long hanging floral installation of pink, magenta and white flowers',
+    'tablescape-citrus': 'A centerpiece of orange roses and yellow blooms on a linen-covered table',
+    'bouquet-ribbon': 'A pastel and coral bouquet tied with a rust-colored ribbon',
+}
+RAIL = ''.join(f'<figure style="--ar:{round(dims(n)[0]/dims(n)[1],3)}">{im(n, rail_alt[n], sizes="(max-width: 560px) 68vw, (max-width: 1450px) 29vw, 420px")}</figure>' for n in rail_imgs)
 
 home = f'''
 <section class="hero">
-  {im('home-banner', 'A long white table set with candles, glassware and a low arrangement of yellow, peach and white flowers beside a window', 'hero__img', eager=True)}
+  {im('home-banner', 'A long white table set with candles, glassware and a low arrangement of yellow, peach and white flowers beside a window', 'hero__img', eager=True, sizes='100vw')}
   <div class="hero__body">
     <span class="eyebrow">{AREA} &middot; Now booking 2027</span>
     <h1>Nature inspired garden style florals</h1>
     <div class="btn-row">
-      <a class="btn btn--arrow" href="services.html">Weddings + events</a>
+      <a class="btn btn--arrow" href="wedding-florist.html">Weddings</a>
+      <a class="btn btn--arrow" href="services.html#events">Events</a>
       <a class="btn btn--arrow" href="floral-bar.html">Floral Bar</a>
       <a class="btn btn--arrow" href="experiences.html">Experiences</a>
     </div>
@@ -219,7 +327,7 @@ home = f'''
   <div class="wrap">
     <h2 class="dsp">Thoughtful design. Intentional details. Unforgettable moments.</h2>
     <span class="rule"></span>
-    <p>We design florals for weddings, private events and hands-on gatherings. Each one starts with the room, the season and the people who will fill it, then gets built stem by stem.</p>
+    <p>We design florals for weddings, private events and hands-on gatherings across Delaware, Greenville, Philadelphia, New Hope and the surrounding areas. Each one starts with the room, the season and the people who will fill it, then gets built stem by stem.</p>
     <div class="btn-row"><a class="btn" href="services.html">Explore offerings</a></div>
   </div>
 </section>
@@ -241,11 +349,11 @@ home = f'''
 </section>
 
 <section class="feature">
-  {im('table-long-pastel', 'A long white table set with pastel centerpieces and wishbone chairs in a bright room')}
+  {im('table-long-pastel', 'A long white table set with pastel centerpieces and wishbone chairs in a bright room', sizes='100vw')}
   <div class="feature__card">
     <h2 class="dsp">Weddings + events</h2>
     <p>We take on a limited number of weddings and events each season so every client gets our full creative focus. Our full-service design covers every touchpoint, from personal flowers to installations, and we deliver and set up everything.</p>
-    <a class="btn" href="services.html">View the details</a>
+    <div class="btn-row btn-row--center" style="margin-top:0"><a class="btn" href="wedding-florist.html">Wedding florals</a><a class="btn" href="services.html#events">Event florals</a></div>
   </div>
 </section>
 
@@ -254,9 +362,9 @@ home = f'''
     <h2 class="dsp" style="text-align:center">Floral experiences</h2>
     <p class="sec-intro">From hands-on workshops to private gatherings and the Floral Bar, our experiences are designed to inspire creativity, connection and a deeper appreciation for the beauty in everyday moments.</p>
     <div class="cards">
-      <figure><a href="experiences.html"><div class="ph-img">{im('designing-table', 'A florist arranging yellow and white flowers at a table in a bright room', '', extra='style="object-position:70% 50%"')}</div><h3>Workshops</h3></a><figcaption><p>Learn a designer’s techniques in a small class and leave with your own arrangement.</p></figcaption></figure>
-      <figure><a href="experiences.html"><div class="ph-img">{im('designer-making', 'A designer arranging flowers in white bowls at a wooden table', '', extra='style="object-position:30% 50%"')}</div><h3>Private gatherings</h3></a><figcaption><p>Bring the workshop to your group for a shower, a birthday or a team day.</p></figcaption></figure>
-      <figure><a href="floral-bar.html"><div class="ph-img">{im('ladder-daisies', 'Daisies and cosmos in a woven basket at the foot of a wooden ladder')}</div><h3>The Floral Bar</h3></a><figcaption><p>A self-serve flower station for your event. Pick, arrange, take home.</p></figcaption></figure>
+      <figure><a href="experiences.html"><div class="ph-img">{im('designing-table', 'A florist arranging yellow and white flowers at a table in a bright room', '', extra='style="object-position:70% 50%"', sizes='(max-width: 860px) 100vw, 33vw')}</div><h3>Workshops</h3></a><figcaption><p>Learn a designer’s techniques in a small class and leave with your own arrangement.</p></figcaption></figure>
+      <figure><a href="experiences.html"><div class="ph-img">{im('designer-making', 'A designer arranging flowers in white bowls at a wooden table', '', extra='style="object-position:30% 50%"', sizes='(max-width: 860px) 100vw, 33vw')}</div><h3>Private gatherings</h3></a><figcaption><p>Bring the workshop to your group for a shower, a birthday or a team day.</p></figcaption></figure>
+      <figure><a href="floral-bar.html"><div class="ph-img">{im('ladder-daisies', 'Daisies and cosmos in a woven basket at the foot of a wooden ladder', sizes='(max-width: 860px) 100vw, 33vw')}</div><h3>The Floral Bar</h3></a><figcaption><p>A self-serve flower station for your event. Pick, arrange, take home.</p></figcaption></figure>
     </div>
     <div class="btn-row btn-row--center" style="margin-top:clamp(2.2rem,4vw,3.6rem)"><a class="btn" href="reserve.html">Reserve your spot</a></div>
   </div>
@@ -277,12 +385,14 @@ home = f'''
 </section>
 
 <section class="closing">
-  {im('centerpiece-wide-b', 'A wide table with a lush centerpiece of roses, pampas and greenery')}
+  {im('centerpiece-wide-b', 'A wide reception table with a lush centerpiece of roses, pampas and greenery', sizes='100vw')}
   <div><span class="script">Let’s design florals they’ll remember.</span><a class="btn btn--arrow" href="contact.html">Inquire now</a></div>
 </section>
 '''
-page('index.html', 'Florals for weddings, events and experiences',
-     'Floral design for weddings and meaningful gatherings in Delaware, Pennsylvania and beyond, plus hands-on floral experiences and the Floral Bar.', home)
+page('index.html', 'Home',
+     'Garden-style wedding and event florist serving Delaware, Greenville, Philadelphia and New Hope. Bouquets, ceremony and reception flowers. Inquire about your date.',
+     home, schema=[florist(), {'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE, 'url': DOMAIN}],
+     full_title='Wedding & Event Florist in Delaware & Philadelphia | 1848 Blooms')
 
 # ================================================================== ABOUT
 about = f'''
@@ -300,7 +410,7 @@ about = f'''
   </div>
 </section>
 
-<section class="full-img">{im('table-window', 'A bright table by a window set with glassware and a centerpiece of yellow and orange flowers', extra='style="object-position:50% 70%"')}</section>
+<section class="full-img">{im('table-window', 'A bright table by a window set with glassware and a centerpiece of yellow and orange flowers', extra='style="object-position:50% 70%"', sizes='100vw')}</section>
 
 <section class="panels">
   <div class="panel panel--img">{im('designer-smile', 'Irene Acquah smiling in a beige apron, holding a bouquet of white, yellow and orange flowers', extra='style="object-position:50% 8%"')}</div>
@@ -312,7 +422,7 @@ about = f'''
 
 {closer('Tell us about your event.', 'Inquire now', band='band-paper2')}
 '''
-page('about.html', 'About', 'About 1848 Blooms & Designs, a floral design studio serving Delaware, Pennsylvania and beyond for weddings, events and hands-on experiences.', about)
+page('about.html', 'About', 'About 1848 Blooms & Designs, a garden-style wedding and event floral studio serving Delaware, Greenville, Philadelphia, New Hope and beyond.', about)
 
 # ================================================================== DESIGNER
 designer = f'''
@@ -343,7 +453,7 @@ designer = f'''
 
 {closer('Let’s make something together.', 'Inquire now')}
 '''
-page('designer.html', 'Meet the designer', 'Meet Irene Acquah, lead designer of 1848 Blooms & Designs.', designer)
+page('designer.html', 'Meet Irene Acquah, Lead Designer', 'Meet Irene Acquah, lead designer of 1848 Blooms & Designs, a wedding and event florist serving Delaware, Philadelphia and New Hope.', designer, og='designer-smile')
 
 # ================================================================== SERVICES
 services = f'''
@@ -363,7 +473,7 @@ services = f'''
     </ul>
     <p><em>Custom wedding florals tailored to your celebration.</em></p>
     <p class="small">Wedding florals start at $2,500.00</p>
-    <div class="btn-row"><a class="btn" {WED_ATTR}>Inquire about your wedding</a></div>
+    <div class="btn-row"><a class="btn" {WED_ATTR}>Inquire about your wedding</a><a class="btn btn--ghost" href="wedding-florist.html">More about weddings</a></div>
   </div></div>
 </section>
 
@@ -401,7 +511,7 @@ services = f'''
       <details><summary>How much do wedding and event flowers cost?</summary><div><p>Every event is different, so pricing depends on the flowers, arrangements and overall design. Share a few details about your celebration and we’ll put together a proposal based on what you need.</p></div></details>
       <details><summary>Can I choose my flowers and colors?</summary><div><p>Absolutely. We love hearing what you have in mind. We’ll work with your preferred colors and flowers, while recommending seasonal blooms and combinations that work beautifully together. Specific varieties depend on availability.</p></div></details>
       <details><summary>Do you deliver and set up?</summary><div><p>Delivery and on-site setup can be included depending on your event and floral needs. We’ll confirm the arrangements, location and any associated fees in your proposal.</p></div></details>
-      <details><summary>Where do you provide floral services?</summary><div><p>We serve Delaware, Pennsylvania and beyond, including Philadelphia, New Hope, Lumberville, Doylestown and Kennett Square. Planning something farther away? We’d love to hear about it.</p></div></details>
+      <details><summary>Where do you provide floral services?</summary><div><p>We serve Delaware, Pennsylvania and beyond, including Greenville, Philadelphia, New Hope, Lumberville, Doylestown and Kennett Square. Planning something farther away? We’d love to hear about it.</p></div></details>
       <details><summary>What happens after I submit an inquiry?</summary><div><p>We’ll review your event details, learn more about what you’re looking for and discuss the next steps. Once the scope and pricing are agreed upon, we’ll explain the booking and payment process.</p></div></details>
     </div>
   </div>
@@ -409,7 +519,7 @@ services = f'''
 
 {closer('Ready to talk florals?', 'Inquire now', 'contact.html#general', 'band-petal')}
 '''
-page('services.html', 'Services', 'Wedding and event floral design in Delaware, Pennsylvania and beyond: bouquets, ceremony florals, reception florals and installations.', services)
+page('services.html', 'Wedding & Event Florals', 'Wedding and event florals in Delaware, Greenville, Philadelphia and New Hope: bouquets, ceremony and reception flowers, centerpieces and installations.', services, og='centerpiece-wide-a')
 
 # ================================================================== FLORAL BAR
 bar = f'''
@@ -454,7 +564,7 @@ bar = f'''
 
 {closer('Bring the Floral Bar to your event.', 'Start an inquiry', band='band-paper2')}
 '''
-page('floral-bar.html', 'Floral Bar', 'The Floral Bar by 1848 Blooms & Designs: a self-serve flower station where guests pick stems, arrange them and take them home.', bar)
+page('floral-bar.html', 'Floral Bar for Weddings & Events', 'A self-serve flower bar for weddings, showers and events in Delaware, Philadelphia and New Hope. Guests pick stems, arrange them and take them home.', bar, og='home-floralbar')
 
 # ================================================================== EXPERIENCES
 # Edit upcoming workshops and passes here, then run `python3 build.py`.
@@ -572,7 +682,7 @@ exp = f'''
   </div>
 </section>
 '''
-page('experiences.html', 'Experiences', 'Book a hands-on floral workshop, a workshop pass or a private floral experience with 1848 Blooms & Designs in Delaware, Pennsylvania and beyond.', exp)
+page('experiences.html', 'Floral Workshops & Private Experiences', 'Book a hands-on floral workshop, a workshop pass or a private flower-arranging party with 1848 Blooms & Designs in Delaware, Pennsylvania and beyond.', exp, og='designing-table')
 
 # ================================================================== PORTFOLIO
 P = [
@@ -605,7 +715,7 @@ P = [
     ('invitations-pink', 'details', 'Blush wedding invitations with a ring box and yellow craspedia'),
     ('ladder-basket', 'floral-bar', 'A woven basket of wildflowers on a wooden ladder'),
 ]
-shots = ''.join(f'<button type="button" class="shot" data-cat="{c}" aria-label="View larger: {html.escape(a)}">{im(n, a)}</button>' for n, c, a in P)
+shots = ''.join(f'<button type="button" class="shot" data-cat="{c}" aria-label="View larger: {html.escape(a)}">{im(n, a, sizes='(max-width: 900px) 50vw, 33vw')}</button>' for n, c, a in P)
 portfolio = f'''
 {phero('', '', 'Portfolio', 'Weddings<br>and events', 'Bouquets<br>and details',
        'A look at recent weddings, events, bouquets and the details between them.', plain=True)}
@@ -633,7 +743,7 @@ portfolio = f'''
 
 {closer('Like what you see?', 'Inquire now', band='band-paper2')}
 '''
-page('portfolio.html', 'Portfolio', 'Weddings, events, bouquets and floral details by 1848 Blooms & Designs.', portfolio)
+page('portfolio.html', 'Wedding & Event Flower Portfolio', 'Real weddings, events, bridal bouquets and floral details by 1848 Blooms & Designs, a florist serving Delaware, Greenville, Philadelphia and New Hope.', portfolio, og='kiss-arch')
 
 # ================================================================== CONTACT
 contact = f'''
@@ -641,7 +751,7 @@ contact = f'''
   <div class="phero__mid"><span class="eyebrow">Inquiries &middot; Now booking 2027</span><div class="tbar"><h1 class="dsp">Get in touch</h1></div></div>
   <div class="phero__foot">
     <p>We are looking forward to hearing from you!</p>
-    <p>For weddings, please visit our <a class="link" href="services.html#weddings">wedding page here</a> and complete our <a class="link" {WED_ATTR}>wedding inquiry form here</a>.<br>For general inquiries, send us a <a class="link" href="#general">message here</a>.</p>
+    <p>For weddings, please visit our <a class="link" href="wedding-florist.html">wedding page here</a> and complete our <a class="link" {WED_ATTR}>wedding inquiry form here</a>.<br>For general inquiries, send us a <a class="link" href="#general">message here</a>.</p>
   </div>
 </section>
 
@@ -650,8 +760,9 @@ contact = f'''
     <aside class="aside">
       {im('designer-stool', 'Irene Acquah, lead designer of 1848 Blooms & Designs, laughing on a stool and holding a bouquet', '', extra='style="object-position:50% 30%"')}
       <dl>
-        <div><dt>Email</dt><dd><a class="link" href="mailto:{EMAIL}">{EMAIL}</a></dd></div>
-        <div><dt>Service area</dt><dd>{AREA}</dd></div>
+        <div><dt>Irene Acquah, lead designer</dt><dd><a class="link" href="mailto:{EMAIL}">{EMAIL}</a><br>{tel(PHONE_IRENE)}</dd></div>
+        <div><dt>Jonas Acquah</dt><dd><a class="link" href="mailto:{EMAIL_JONAS}">{EMAIL_JONAS}</a><br>{tel(PHONE_JONAS)}</dd></div>
+        <div><dt>Service area</dt><dd>{AREA}, including Greenville, Philadelphia and New Hope</dd></div>
         <div><dt>Follow along</dt><dd><a class="link" href="https://www.instagram.com/1848BloomsandDesigns" target="_blank" rel="noopener">Instagram</a>, <a class="link" href="https://www.facebook.com/1848BloomsandDesigns" target="_blank" rel="noopener">Facebook</a>, <a class="link" href="https://www.tiktok.com/@1848bloomsanddesigns" target="_blank" rel="noopener">TikTok</a>, <a class="link" href="https://www.linkedin.com/company/1848-blooms-and-designs/" target="_blank" rel="noopener">LinkedIn</a></dd></div>
       </dl>
     </aside>
@@ -681,7 +792,7 @@ contact = f'''
   </div>
 </section>
 '''
-page('contact.html', 'Contact', 'Inquire about wedding or event florals, the Floral Bar or a workshop with 1848 Blooms & Designs.', contact)
+page('contact.html', 'Contact & Inquiries', 'Inquire about wedding or event florals, the Floral Bar or a workshop. Email or call Irene. Serving Delaware, Greenville, Philadelphia and New Hope.', contact, schema=[florist()])
 
 # ================================================================== RESERVE
 reserve = f'''
@@ -723,7 +834,75 @@ reserve = f'''
   </div>
 </section>
 '''
-page('reserve.html', 'Reserve your spot', 'Reserve a spot in a floral workshop or private gathering with 1848 Blooms & Designs.', reserve)
+page('reserve.html', 'Reserve a Workshop Spot', 'Reserve a spot in a floral workshop, a workshop pass or a private gathering with 1848 Blooms & Designs.', reserve)
+
+# ================================================================== WEDDING FLORIST (landing page for "wedding florist" searches)
+WG = [('bouquet-bright', 'A bright bridal bouquet of yellow, coral and blush flowers held against a white dress'),
+      ('arch-willow', 'A wooden ceremony pergola draped with white fabric and flowers beneath a willow tree'),
+      ('bridesmaids', 'Bridesmaids in lavender dresses holding white bouquets on a brick patio'),
+      ('reception-lights', 'A wedding reception table beneath string lights with a pampas and rose centerpiece')]
+wstrip = ''.join(f'<figure style="--r:{ratio(n)}">{im(n, a, sizes="(max-width: 900px) 50vw, 25vw")}</figure>' for n, a in WG)
+weddings = f'''
+{phero('couple-window', 'A bride and groom sharing a quiet moment at a window, her bouquet in hand', 'Wedding florist', 'Delaware<br>and Greenville', 'Philadelphia<br>and New Hope',
+       'Nature-inspired, garden-style wedding flowers for couples marrying in Delaware, Greenville, Philadelphia, New Hope and the surrounding areas.',
+       f'<a class="btn" {WED_ATTR}>Start your wedding inquiry</a>')}
+
+<section class="panels">
+  <div class="panel panel--img" style="min-height:680px">{im('kiss-arch', 'A couple kissing under a wooden wedding arch draped in white fabric and white flowers')}</div>
+  <div class="panel panel--petal panel--center"><div>
+    <h2 class="dsp">Wedding flowers, start to finish</h2>
+    <p>Your florals should feel like you and fit the occasion. We understand and design the whole story so the ceremony, the reception and the people in them all feel connected. We take on a limited number of weddings each season so every couple gets our full creative focus.</p>
+    <ul class="tick">
+      <li><strong>Personal flowers</strong><span>Bouquets, boutonnieres, corsages and flowers for your wedding party.</span></li>
+      <li><strong>Ceremony flowers</strong><span>Floral arches, aisle arrangements and statement pieces for your ceremony.</span></li>
+      <li><strong>Reception flowers</strong><span>Centerpieces, installations and floral details that bring your reception space together.</span></li>
+      <li><strong>A Floral Bar</strong><span>Guests build their own bouquet as a favor. <a class="link" href="floral-bar.html">How it works</a></span></li>
+    </ul>
+    <p><em>Custom wedding florals tailored to your celebration.</em></p>
+    <p class="small">Wedding florals start at $2,500.00</p>
+    <div class="btn-row"><a class="btn" {WED_ATTR}>Inquire about your wedding</a></div>
+  </div></div>
+</section>
+
+<section class="section band-paper2">
+  <div class="wrap">
+    {tbar('Recent weddings', 'Bouquets', 'Ceremonies')}
+    <div class="strip" style="margin-top:clamp(2rem,4vw,3.5rem)">{wstrip}</div>
+    <div class="btn-row btn-row--center" style="margin-top:clamp(2rem,4vw,3rem)"><a class="btn" href="portfolio.html#weddings">See the wedding portfolio</a></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split split--top split--57">
+    <div class="copy">
+      <h2 class="dsp" style="font-size:clamp(2rem,.9rem + 3.6vw,4.2rem)">Where we design weddings</h2>
+      <p>We design wedding flowers across Delaware, including Greenville, and in Pennsylvania from Philadelphia to New Hope, Lumberville, Doylestown and Kennett Square. Planning something farther away? We&rsquo;d love to hear about it.</p>
+    </div>
+    <div class="faq">
+      <details><summary>How far in advance should we book our wedding florist?</summary><div><p>We recommend reaching out 6&ndash;12 months ahead, especially for popular dates. Have a date coming up sooner? Reach out and we&rsquo;ll see what we can do.</p></div></details>
+      <details><summary>How much do wedding flowers cost?</summary><div><p>Wedding florals start at $2,500. Pricing depends on the flowers, arrangements and overall design, so share a few details and we&rsquo;ll put together a proposal based on what you need.</p></div></details>
+      <details><summary>Can we choose our flowers and colors?</summary><div><p>Absolutely. We&rsquo;ll work with your preferred colors and flowers, while recommending seasonal blooms and combinations that work beautifully together. Specific varieties depend on availability.</p></div></details>
+      <details><summary>Do you deliver and set up at our venue?</summary><div><p>Delivery and on-site setup can be included depending on your wedding and floral needs. We&rsquo;ll confirm the arrangements, location and any associated fees in your proposal.</p></div></details>
+      <details><summary>What happens after we inquire?</summary><div><p>Irene replies by email within 24 hours to set up a time to talk about your florals. Once the scope and pricing are agreed, we&rsquo;ll explain the booking and payment process.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<section class="section band-petal"><div class="wrap closer">
+  <h2 class="dsp">Tell us about your wedding.</h2>
+  <p style="max-width:40ch;margin:1.2rem auto 0">Six short steps, about three minutes. Irene replies within 24 hours.</p>
+  <div class="btn-row btn-row--center"><a class="btn btn--arrow" {WED_ATTR}>Start your wedding inquiry</a></div>
+  <p class="small" style="margin-top:1.4rem">Or email <a class="link" href="mailto:{EMAIL}">{EMAIL}</a> &middot; call or text {tel(PHONE_IRENE)}</p>
+</div></section>
+'''
+page('wedding-florist.html', 'Wedding Florist in Delaware, Philadelphia & New Hope',
+     'Garden-style wedding flowers for couples in Delaware, Greenville, Philadelphia and New Hope: bouquets, ceremony arches, centerpieces and installations.',
+     weddings, og='kiss-arch', full_title='Wedding Florist in Delaware, Philadelphia & New Hope | 1848 Blooms', schema=[{
+         '@context': 'https://schema.org', '@type': 'Service', 'serviceType': 'Wedding florist',
+         'name': 'Wedding florals', 'url': DOMAIN + 'wedding-florist.html',
+         'description': 'Personal flowers, ceremony flowers, reception flowers and installations for weddings, delivered and set up at your venue.',
+         'provider': {'@type': 'Florist', '@id': DOMAIN + '#business', 'name': SITE, 'url': DOMAIN}, 'areaServed': AREAS,
+         'offers': {'@type': 'Offer', 'priceSpecification': {'@type': 'PriceSpecification', 'minPrice': 2500, 'priceCurrency': 'USD'}}}])
 
 # ================================================================== WEDDING INQUIRY (opens the pop-up)
 wedding = f"""
@@ -761,4 +940,32 @@ thanks = f'''
 </div>
 '''
 page('thank-you.html', 'Thank you', 'Thank you from 1848 Blooms & Designs.', thanks, noindex=True)
+
+# ================================================================== 404 (GitHub Pages serves this for any missing URL,
+# including old Shopify links like /pages/contact, so visitors land somewhere useful)
+nf = '''
+<section class="phero phero--plain">
+  <div class="phero__mid"><span class="eyebrow">Page not found</span><div class="tbar"><h1 class="dsp">This page has moved</h1></div></div>
+  <div class="phero__foot"><p>The page you were looking for is not here any more. Try one of these instead.</p>
+  <div class="btn-row"><a class="btn" href="wedding-florist.html">Weddings</a><a class="btn" href="services.html">Weddings + events</a><a class="btn btn--ghost" href="contact.html">Contact</a></div></div>
+</section>
+<script>(function(){var p=location.pathname.toLowerCase(),m=[['wedding','wedding-florist.html'],['contact','contact.html'],['about','about.html'],['portfolio','portfolio.html'],['gallery','portfolio.html'],['workshop','experiences.html'],['class','experiences.html'],['floral-bar','floral-bar.html'],['event','services.html'],['service','services.html']];
+for(var i=0;i<m.length;i++)if(p.indexOf(m[i][0])>-1){location.replace('/'+m[i][1]);return;}})();</script>
+'''
+page('404.html', 'Page not found', 'This page has moved. Find wedding and event florals by 1848 Blooms & Designs.', nf, noindex=True)
+# links on the 404 page must work from any depth (e.g. /pages/contact), so make them start at the site root
+_n = open(f'{OUT}/404.html').read()
+for _a in ('href="', 'src="', 'srcset="'):
+    _n = _n.replace(_a + 'assets/', _a + '/assets/')
+_n = _n.replace(', assets/', ', /assets/')
+for _f in [f for f, _ in PAGES]:
+    _n = _n.replace(f'href="{_f}', f'href="/{_f}')
+open(f'{OUT}/404.html', 'w').write(_n)
+
+# ================================================================== SITEMAP + ROBOTS
+PRI = {'index.html': '1.0', 'wedding-florist.html': '0.9', 'services.html': '0.9', 'contact.html': '0.8', 'wedding.html': '0.8', 'portfolio.html': '0.7'}
+urls = ''.join(f'  <url><loc>{DOMAIN if f == "index.html" else DOMAIN + f}</loc><priority>{PRI.get(f, "0.6")}</priority></url>\n'
+               for f, ni in PAGES if not ni)
+open(f'{OUT}/sitemap.xml', 'w').write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
+open(f'{OUT}/robots.txt', 'w').write(f'User-agent: *\nAllow: /\n\nSitemap: {DOMAIN}sitemap.xml\n')
 print('built', len([f for f in os.listdir(OUT) if f.endswith('.html')]), 'pages')
