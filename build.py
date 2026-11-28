@@ -20,8 +20,19 @@ PHONE_JONAS = '302-442-0850'
 GOOGLE_PROFILE = 'https://www.google.com/maps?cid=16409749098243940665'
 SOCIAL = ['https://www.instagram.com/1848BloomsandDesigns', 'https://www.facebook.com/1848BloomsandDesigns',
           'https://www.tiktok.com/@1848bloomsanddesigns', 'https://www.linkedin.com/company/1848-blooms-and-designs/']
-# The places we most want to be found for. Used in page titles, descriptions, copy and structured data.
-TOWNS = 'Delaware, Greenville, Philadelphia and New Hope'
+# The towns we most want to be found for, always with their state. Used in page text, descriptions and structured data.
+PLACES = {'Delaware': ['Wilmington', 'Greenville', 'Middletown'],
+          'Pennsylvania': ['Philadelphia', 'Kennett Square', 'Doylestown', 'New Hope'],
+          'New Jersey': ['Lambertville']}
+ABBR = {'Delaware': 'DE', 'Pennsylvania': 'PA', 'New Jersey': 'NJ'}
+
+
+def _and(xs):
+    return xs[0] if len(xs) == 1 else ', '.join(xs[:-1]) + ' and ' + xs[-1]
+
+
+# "Wilmington, Greenville and Middletown, DE; Philadelphia, Kennett Square, Doylestown and New Hope, PA; and Lambertville, NJ"
+TOWNS = '; '.join(('and ' if i == len(PLACES) - 1 else '') + f'{_and(t)}, {ABBR[st]}' for i, (st, t) in enumerate(PLACES.items()))
 PAGES = []   # (filename, noindex) collected for sitemap.xml
 
 
@@ -117,9 +128,9 @@ def footer():
 
 DE = {'@type': 'State', 'name': 'Delaware'}
 PA = {'@type': 'State', 'name': 'Pennsylvania'}
-AREAS = [DE, {'@type': 'City', 'name': 'Greenville', 'containedInPlace': DE},
-         {'@type': 'City', 'name': 'Philadelphia', 'containedInPlace': PA},
-         {'@type': 'City', 'name': 'New Hope', 'containedInPlace': PA}, PA]
+NJ = {'@type': 'State', 'name': 'New Jersey'}
+_ST = {'Delaware': DE, 'Pennsylvania': PA, 'New Jersey': NJ}
+AREAS = [{'@type': 'City', 'name': t, 'containedInPlace': _ST[st]} for st, ts in PLACES.items() for t in ts] + [DE, PA, NJ]
 
 
 def florist():
@@ -327,7 +338,7 @@ home = f'''
   <div class="wrap">
     <h2 class="dsp">Thoughtful design. Intentional details. Unforgettable moments.</h2>
     <span class="rule"></span>
-    <p>We design florals for weddings, private events and hands-on gatherings across Delaware, Greenville, Philadelphia, New Hope and the surrounding areas. Each one starts with the room, the season and the people who will fill it, then gets built stem by stem.</p>
+    <p>We design florals for weddings, private events and hands-on gatherings across Delaware, Pennsylvania and New Jersey, including {TOWNS}. Each one starts with the room, the season and the people who will fill it, then gets built stem by stem.</p>
     <div class="btn-row"><a class="btn" href="services.html">Explore offerings</a></div>
   </div>
 </section>
@@ -390,9 +401,9 @@ home = f'''
 </section>
 '''
 page('index.html', 'Home',
-     'Garden-style wedding and event florist serving Delaware, Greenville, Philadelphia and New Hope. Bouquets, ceremony and reception flowers. Inquire about your date.',
+     'Garden-style wedding and event florist serving Wilmington, Greenville and Middletown, DE; Philadelphia, New Hope and Doylestown, PA; and Lambertville, NJ.',
      home, schema=[florist(), {'@context': 'https://schema.org', '@type': 'WebSite', 'name': SITE, 'url': DOMAIN}],
-     full_title='Wedding & Event Florist in Delaware & Philadelphia | 1848 Blooms')
+     full_title='Wedding & Event Florist in Wilmington, DE & Philadelphia, PA | 1848 Blooms')
 
 # ================================================================== ABOUT
 about = f'''
@@ -422,7 +433,7 @@ about = f'''
 
 {closer('Tell us about your event.', 'Inquire now', band='band-paper2')}
 '''
-page('about.html', 'About', 'About 1848 Blooms & Designs, a garden-style wedding and event floral studio serving Delaware, Greenville, Philadelphia, New Hope and beyond.', about)
+page('about.html', 'About', 'About 1848 Blooms & Designs, a garden-style wedding and event floral studio serving Wilmington, DE, Philadelphia, PA, Lambertville, NJ and nearby towns.', about)
 
 # ================================================================== DESIGNER
 designer = f'''
@@ -453,7 +464,7 @@ designer = f'''
 
 {closer('Let’s make something together.', 'Inquire now')}
 '''
-page('designer.html', 'Meet Irene Acquah, Lead Designer', 'Meet Irene Acquah, lead designer of 1848 Blooms & Designs, a wedding and event florist serving Delaware, Philadelphia and New Hope.', designer, og='designer-smile')
+page('designer.html', 'Meet Irene Acquah, Lead Designer', 'Meet Irene Acquah, lead designer of 1848 Blooms & Designs, a wedding and event florist serving Wilmington, DE, Philadelphia, PA and nearby towns.', designer, og='designer-smile')
 
 # ================================================================== SERVICES
 services = f'''
@@ -473,7 +484,7 @@ services = f'''
     </ul>
     <p><em>Custom wedding florals tailored to your celebration.</em></p>
     <p class="small">Wedding florals start at $2,500.00</p>
-    <p class="small">Wedding flowers for couples in Delaware, Greenville, Philadelphia, New Hope and the surrounding areas.</p>
+    <p class="small">Serving couples in {TOWNS}.</p>
     <div class="btn-row"><a class="btn" {WED_ATTR}>Inquire about your wedding</a></div>
   </div></div>
 </section>
@@ -512,7 +523,7 @@ services = f'''
       <details><summary>How much do wedding and event flowers cost?</summary><div><p>Every event is different, so pricing depends on the flowers, arrangements and overall design. Share a few details about your celebration and we’ll put together a proposal based on what you need.</p></div></details>
       <details><summary>Can I choose my flowers and colors?</summary><div><p>Absolutely. We love hearing what you have in mind. We’ll work with your preferred colors and flowers, while recommending seasonal blooms and combinations that work beautifully together. Specific varieties depend on availability.</p></div></details>
       <details><summary>Do you deliver and set up?</summary><div><p>Delivery and on-site setup can be included depending on your event and floral needs. We’ll confirm the arrangements, location and any associated fees in your proposal.</p></div></details>
-      <details><summary>Where do you provide floral services?</summary><div><p>We serve Delaware, Pennsylvania and beyond, including Greenville, Philadelphia, New Hope, Lumberville, Doylestown and Kennett Square. Planning something farther away? We’d love to hear about it.</p></div></details>
+      <details><summary>Where do you provide floral services?</summary><div><p>We serve Delaware, Pennsylvania, New Jersey and beyond, including {TOWNS}. Planning something farther away? We’d love to hear about it.</p></div></details>
       <details><summary>What happens after I submit an inquiry?</summary><div><p>We’ll review your event details, learn more about what you’re looking for and discuss the next steps. Once the scope and pricing are agreed upon, we’ll explain the booking and payment process.</p></div></details>
     </div>
   </div>
@@ -520,7 +531,7 @@ services = f'''
 
 {closer('Ready to talk florals?', 'Inquire now', 'contact.html#general', 'band-petal')}
 '''
-page('services.html', 'Wedding & Event Florals', 'Wedding and event florals in Delaware, Greenville, Philadelphia and New Hope: bouquets, ceremony and reception flowers, centerpieces and installations.', services, og='centerpiece-wide-a', schema=[{
+page('services.html', 'Wedding & Event Florals', 'Wedding and event florals in Wilmington and Greenville, DE; Philadelphia, Kennett Square, Doylestown and New Hope, PA; and Lambertville, NJ.', services, og='centerpiece-wide-a', schema=[{
          '@context': 'https://schema.org', '@type': 'Service', 'serviceType': 'Wedding florist',
          'name': 'Wedding florals', 'url': DOMAIN + 'services.html#weddings',
          'description': 'Personal flowers, ceremony flowers, reception flowers and installations for weddings in ' + TOWNS + '.',
@@ -530,7 +541,7 @@ page('services.html', 'Wedding & Event Florals', 'Wedding and event florals in D
          'name': 'Event florals', 'url': DOMAIN + 'services.html#events',
          'provider': {'@type': 'Florist', '@id': DOMAIN + '#business'}, 'areaServed': AREAS,
          'offers': {'@type': 'Offer', 'priceSpecification': {'@type': 'PriceSpecification', 'minPrice': 750, 'priceCurrency': 'USD'}}}],
-     full_title='Wedding & Event Florist in Delaware, Philadelphia & New Hope | 1848 Blooms')
+     full_title='Wedding & Event Florals in Wilmington, DE & Philadelphia, PA | 1848 Blooms')
 
 # ================================================================== FLORAL BAR
 bar = f'''
@@ -575,7 +586,7 @@ bar = f'''
 
 {closer('Bring the Floral Bar to your event.', 'Start an inquiry', band='band-paper2')}
 '''
-page('floral-bar.html', 'Floral Bar for Weddings & Events', 'A self-serve flower bar for weddings, showers and events in Delaware, Philadelphia and New Hope. Guests pick stems, arrange them and take them home.', bar, og='home-floralbar')
+page('floral-bar.html', 'Floral Bar for Weddings & Events', 'A self-serve flower bar for weddings, showers and events in Wilmington, DE, Philadelphia, PA and nearby towns. Guests pick, arrange and take home their own.', bar, og='home-floralbar')
 
 # ================================================================== EXPERIENCES
 # Edit upcoming workshops and passes here, then run `python3 build.py`.
@@ -754,7 +765,7 @@ portfolio = f'''
 
 {closer('Like what you see?', 'Inquire now', band='band-paper2')}
 '''
-page('portfolio.html', 'Wedding & Event Flower Portfolio', 'Real weddings, events, bridal bouquets and floral details by 1848 Blooms & Designs, a florist serving Delaware, Greenville, Philadelphia and New Hope.', portfolio, og='kiss-arch')
+page('portfolio.html', 'Wedding & Event Flower Portfolio', 'Real weddings, events, bridal bouquets and floral details by 1848 Blooms & Designs, a florist serving Wilmington, DE, Philadelphia, PA and Lambertville, NJ.', portfolio, og='kiss-arch')
 
 # ================================================================== CONTACT
 contact = f'''
@@ -773,7 +784,7 @@ contact = f'''
       <dl>
         <div><dt>Irene Acquah, lead designer</dt><dd><a class="link" href="mailto:{EMAIL}">{EMAIL}</a><br>{tel(PHONE_IRENE)}</dd></div>
         <div><dt>Jonas Acquah, business manager</dt><dd><a class="link" href="mailto:{EMAIL_JONAS}">{EMAIL_JONAS}</a><br>{tel(PHONE_JONAS)}</dd></div>
-        <div><dt>Service area</dt><dd>{AREA}, including Greenville, Philadelphia and New Hope</dd></div>
+        <div><dt>Service area</dt><dd>{AREA}, including {TOWNS}</dd></div>
         <div><dt>Follow along</dt><dd><a class="link" href="https://www.instagram.com/1848BloomsandDesigns" target="_blank" rel="noopener">Instagram</a>, <a class="link" href="https://www.facebook.com/1848BloomsandDesigns" target="_blank" rel="noopener">Facebook</a>, <a class="link" href="https://www.tiktok.com/@1848bloomsanddesigns" target="_blank" rel="noopener">TikTok</a>, <a class="link" href="https://www.linkedin.com/company/1848-blooms-and-designs/" target="_blank" rel="noopener">LinkedIn</a></dd></div>
       </dl>
     </aside>
@@ -803,7 +814,7 @@ contact = f'''
   </div>
 </section>
 '''
-page('contact.html', 'Contact & Inquiries', 'Inquire about wedding or event florals, the Floral Bar or a workshop. Email or call Irene. Serving Delaware, Greenville, Philadelphia and New Hope.', contact, schema=[florist()])
+page('contact.html', 'Contact & Inquiries', 'Inquire about wedding or event florals, the Floral Bar or a workshop. Email or call Irene. Serving Wilmington, DE, Philadelphia, PA and nearby towns.', contact, schema=[florist()])
 
 # ================================================================== RESERVE
 reserve = f'''
